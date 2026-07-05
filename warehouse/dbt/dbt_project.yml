@@ -1,0 +1,17 @@
+name: openeventflow_warehouse
+version: 0.1.0
+config-version: 2
+
+profile: openeventflow_clickhouse
+
+model-paths:
+  - models
+
+models:
+  openeventflow_warehouse:
+    dwd:
+      +materialized: table
+    fct:
+      +materialized: table
+    ads:
+      +materialized: table

@@ -1,0 +1,17 @@
+{
+  "name": "@openeventflow/react",
+  "version": "0.1.0",
+  "description": "React bindings for OpenEventFlow.",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "react": ">=18"
+  }
+}

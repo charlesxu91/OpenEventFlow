@@ -1,0 +1,319 @@
+{
+  "namespace": "io.openeventflow.app",
+  "schemaVendor": "io.openeventflow",
+  "events": [
+    {
+      "name": "product_exposed",
+      "version": "1-0-0",
+      "owner": "recommendation",
+      "description": "A product card became visible enough to count as an exposure.",
+      "required": [
+        "product_id",
+        "page",
+        "position",
+        "exposure_id"
+      ],
+      "properties": {
+        "product_id": {
+          "type": "string",
+          "description": "Stable product identifier."
+        },
+        "page": {
+          "type": "string",
+          "description": "Logical page name."
+        },
+        "position": {
+          "type": "integer",
+          "description": "Zero-based item position in the container."
+        },
+        "exposure_id": {
+          "type": "string",
+          "description": "Client-generated id for exposure deduplication."
+        },
+        "visible_ratio": {
+          "type": "number",
+          "description": "Visible area ratio from 0 to 1."
+        },
+        "duration_ms": {
+          "type": "integer",
+          "description": "Visible duration in milliseconds."
+        },
+        "recommend_trace_id": {
+          "type": "string",
+          "description": "Recommendation request trace id."
+        }
+      }
+    },
+    {
+      "name": "add_to_cart",
+      "version": "1-0-0",
+      "owner": "commerce",
+      "description": "A user added a product to cart.",
+      "required": [
+        "product_id",
+        "sku_id",
+        "quantity"
+      ],
+      "properties": {
+        "product_id": {
+          "type": "string",
+          "description": "Stable product identifier."
+        },
+        "sku_id": {
+          "type": "string",
+          "description": "Stable SKU identifier."
+        },
+        "quantity": {
+          "type": "integer",
+          "description": "Number of units added."
+        },
+        "price": {
+          "type": "number",
+          "description": "Unit price at the time of add-to-cart."
+        },
+        "currency": {
+          "type": "string",
+          "description": "ISO currency code."
+        }
+      }
+    },
+    {
+      "name": "product_clicked",
+      "version": "1-0-0",
+      "owner": "commerce",
+      "description": "A user clicked a product card or product entry point.",
+      "required": [
+        "product_id",
+        "page",
+        "position",
+        "click_id"
+      ],
+      "properties": {
+        "product_id": {
+          "type": "string",
+          "description": "Stable product identifier."
+        },
+        "page": {
+          "type": "string",
+          "description": "Logical page name."
+        },
+        "position": {
+          "type": "integer",
+          "description": "Zero-based item position in the container."
+        },
+        "click_id": {
+          "type": "string",
+          "description": "Client-generated id for click deduplication."
+        },
+        "recommend_trace_id": {
+          "type": "string",
+          "description": "Recommendation request trace id."
+        }
+      }
+    },
+    {
+      "name": "page_stay",
+      "version": "1-0-0",
+      "owner": "engagement",
+      "description": "A user stayed on a logical page for a measured duration.",
+      "required": [
+        "page",
+        "duration_ms",
+        "stay_id"
+      ],
+      "properties": {
+        "page": {
+          "type": "string",
+          "description": "Logical page name."
+        },
+        "duration_ms": {
+          "type": "integer",
+          "description": "Stay duration in milliseconds."
+        },
+        "stay_id": {
+          "type": "string",
+          "description": "Client-generated id for stay deduplication."
+        },
+        "exit_reason": {
+          "type": "string",
+          "description": "Why the page stay ended."
+        }
+      }
+    },
+    {
+      "name": "video_exposed",
+      "version": "1-0-0",
+      "owner": "recommendation",
+      "description": "A short-video feed item became visible enough to count as an exposure.",
+      "required": [
+        "video_id",
+        "page",
+        "position",
+        "exposure_id"
+      ],
+      "properties": {
+        "video_id": {
+          "type": "string",
+          "description": "Stable video identifier."
+        },
+        "author_id": {
+          "type": "string",
+          "description": "Stable creator identifier."
+        },
+        "page": {
+          "type": "string",
+          "description": "Logical feed page."
+        },
+        "position": {
+          "type": "integer",
+          "description": "Zero-based item position in the feed."
+        },
+        "exposure_id": {
+          "type": "string",
+          "description": "Client-generated exposure id."
+        },
+        "visible_ratio": {
+          "type": "number",
+          "description": "Visible area ratio from 0 to 1."
+        },
+        "duration_ms": {
+          "type": "integer",
+          "description": "Visible duration in milliseconds."
+        },
+        "recommend_trace_id": {
+          "type": "string",
+          "description": "Recommendation request trace id."
+        }
+      }
+    },
+    {
+      "name": "video_played",
+      "version": "1-0-0",
+      "owner": "video",
+      "description": "A short video started playback.",
+      "required": [
+        "video_id",
+        "play_id",
+        "page",
+        "position"
+      ],
+      "properties": {
+        "video_id": {
+          "type": "string",
+          "description": "Stable video identifier."
+        },
+        "author_id": {
+          "type": "string",
+          "description": "Stable creator identifier."
+        },
+        "play_id": {
+          "type": "string",
+          "description": "Client-generated playback id."
+        },
+        "page": {
+          "type": "string",
+          "description": "Logical feed page."
+        },
+        "position": {
+          "type": "integer",
+          "description": "Zero-based item position in the feed."
+        },
+        "autoplay": {
+          "type": "boolean",
+          "description": "Whether playback was automatic."
+        },
+        "network_type": {
+          "type": "string",
+          "description": "Current network type."
+        },
+        "recommend_trace_id": {
+          "type": "string",
+          "description": "Recommendation request trace id."
+        }
+      }
+    },
+    {
+      "name": "video_watch",
+      "version": "1-0-0",
+      "owner": "video",
+      "description": "A short video playback session ended with watch metrics.",
+      "required": [
+        "video_id",
+        "play_id",
+        "watch_id",
+        "duration_ms"
+      ],
+      "properties": {
+        "video_id": {
+          "type": "string",
+          "description": "Stable video identifier."
+        },
+        "author_id": {
+          "type": "string",
+          "description": "Stable creator identifier."
+        },
+        "play_id": {
+          "type": "string",
+          "description": "Client-generated playback id."
+        },
+        "watch_id": {
+          "type": "string",
+          "description": "Client-generated watch id."
+        },
+        "duration_ms": {
+          "type": "integer",
+          "description": "Foreground watch duration in milliseconds."
+        },
+        "play_duration_ms": {
+          "type": "integer",
+          "description": "Video media duration in milliseconds."
+        },
+        "completion_rate": {
+          "type": "number",
+          "description": "Watched ratio from 0 to 1."
+        },
+        "completed": {
+          "type": "boolean",
+          "description": "Whether playback reached completion."
+        },
+        "exit_reason": {
+          "type": "string",
+          "description": "Why the watch session ended."
+        }
+      }
+    },
+    {
+      "name": "video_engaged",
+      "version": "1-0-0",
+      "owner": "engagement",
+      "description": "A user engaged with a short video.",
+      "required": [
+        "video_id",
+        "engagement_id",
+        "action"
+      ],
+      "properties": {
+        "video_id": {
+          "type": "string",
+          "description": "Stable video identifier."
+        },
+        "author_id": {
+          "type": "string",
+          "description": "Stable creator identifier."
+        },
+        "play_id": {
+          "type": "string",
+          "description": "Client-generated playback id."
+        },
+        "engagement_id": {
+          "type": "string",
+          "description": "Client-generated engagement id."
+        },
+        "action": {
+          "type": "string",
+          "description": "Engagement action, for example like, comment, share, or follow."
+        }
+      }
+    }
+  ]
+}

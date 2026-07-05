@@ -1,0 +1,48 @@
+{
+  "$schema": "http://iglucentral.com/schemas/com.snowplowanalytics.self-desc/schema/jsonschema/1-0-0#",
+  "self": {
+    "vendor": "io.openeventflow",
+    "name": "product_exposed",
+    "format": "jsonschema",
+    "version": "1-0-0"
+  },
+  "type": "object",
+  "description": "A product card became visible enough to count as an exposure.",
+  "additionalProperties": false,
+  "properties": {
+    "product_id": {
+      "type": "string",
+      "description": "Stable product identifier."
+    },
+    "page": {
+      "type": "string",
+      "description": "Logical page name."
+    },
+    "position": {
+      "type": "integer",
+      "description": "Zero-based item position in the container."
+    },
+    "exposure_id": {
+      "type": "string",
+      "description": "Client-generated id for exposure deduplication."
+    },
+    "visible_ratio": {
+      "type": "number",
+      "description": "Visible area ratio from 0 to 1."
+    },
+    "duration_ms": {
+      "type": "integer",
+      "description": "Visible duration in milliseconds."
+    },
+    "recommend_trace_id": {
+      "type": "string",
+      "description": "Recommendation request trace id."
+    }
+  },
+  "required": [
+    "product_id",
+    "page",
+    "position",
+    "exposure_id"
+  ]
+}

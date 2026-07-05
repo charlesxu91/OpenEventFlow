@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: openeventflow
+    schema: openeventflow
+    tables:
+      - name: ods_snowplow_enriched_events
+        description: Enriched Snowplow self-describing events loaded from Kafka or Redpanda.
+      - name: ods_snowplow_bad_events
+        description: Events rejected by schema, collector, privacy, or parsing rules.

@@ -1,0 +1,52 @@
+{
+  "$schema": "http://iglucentral.com/schemas/com.snowplowanalytics.self-desc/schema/jsonschema/1-0-0#",
+  "self": {
+    "vendor": "io.openeventflow",
+    "name": "video_exposed",
+    "format": "jsonschema",
+    "version": "1-0-0"
+  },
+  "type": "object",
+  "description": "A short-video feed item became visible enough to count as an exposure.",
+  "additionalProperties": false,
+  "properties": {
+    "video_id": {
+      "type": "string",
+      "description": "Stable video identifier."
+    },
+    "author_id": {
+      "type": "string",
+      "description": "Stable creator identifier."
+    },
+    "page": {
+      "type": "string",
+      "description": "Logical feed page."
+    },
+    "position": {
+      "type": "integer",
+      "description": "Zero-based item position in the feed."
+    },
+    "exposure_id": {
+      "type": "string",
+      "description": "Client-generated exposure id."
+    },
+    "visible_ratio": {
+      "type": "number",
+      "description": "Visible area ratio from 0 to 1."
+    },
+    "duration_ms": {
+      "type": "integer",
+      "description": "Visible duration in milliseconds."
+    },
+    "recommend_trace_id": {
+      "type": "string",
+      "description": "Recommendation request trace id."
+    }
+  },
+  "required": [
+    "video_id",
+    "page",
+    "position",
+    "exposure_id"
+  ]
+}

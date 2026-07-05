@@ -1,0 +1,35 @@
+services:
+  iglu-server:
+    image: snowplow/iglu-server:${IGLU_SERVER_VERSION:-0.12.0}
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./config/iglu-server.hocon:/snowplow/config/config.hocon:ro
+      - ../../mobile/generated/schemas:/snowplow/schemas:ro
+    command: ["--config", "/snowplow/config/config.hocon"]
+
+  snowplow-collector:
+    image: snowplow/scala-stream-collector-kafka:${SNOWPLOW_COLLECTOR_VERSION:-3.1.0}
+    depends_on:
+      - iglu-server
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config/collector.hocon:/snowplow/config/config.hocon:ro
+    command: ["--config", "/snowplow/config/config.hocon"]
+
+  snowplow-enrich:
+    image: snowplow/snowplow-enrich-kafka:${SNOWPLOW_ENRICH_VERSION:-5.0.0}
+    depends_on:
+      - iglu-server
+    volumes:
+      - ./config/enrich.hocon:/snowplow/config/config.hocon:ro
+      - ./config/iglu-resolver.json:/snowplow/config/iglu-resolver.json:ro
+      - ./config/enrichments:/snowplow/enrichments:ro
+    command:
+      - "--config"
+      - "/snowplow/config/config.hocon"
+      - "--resolver"
+      - "file:/snowplow/config/iglu-resolver.json"
+      - "--enrichments"
+      - "file:/snowplow/enrichments"

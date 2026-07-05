@@ -1,0 +1,28 @@
+{
+  "schema": "iglu:com.snowplowanalytics.iglu/resolver-config/jsonschema/1-0-3",
+  "data": {
+    "cacheSize": 500,
+    "repositories": [
+      {
+        "name": "OpenEventFlow Local Iglu",
+        "priority": 0,
+        "vendorPrefixes": ["io.openeventflow"],
+        "connection": {
+          "http": {
+            "uri": "http://iglu-server:8080/api"
+          }
+        }
+      },
+      {
+        "name": "Iglu Central",
+        "priority": 10,
+        "vendorPrefixes": ["com.snowplowanalytics"],
+        "connection": {
+          "http": {
+            "uri": "http://iglucentral.com"
+          }
+        }
+      }
+    ]
+  }
+}

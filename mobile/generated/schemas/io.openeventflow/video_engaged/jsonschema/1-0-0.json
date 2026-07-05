@@ -1,0 +1,39 @@
+{
+  "$schema": "http://iglucentral.com/schemas/com.snowplowanalytics.self-desc/schema/jsonschema/1-0-0#",
+  "self": {
+    "vendor": "io.openeventflow",
+    "name": "video_engaged",
+    "format": "jsonschema",
+    "version": "1-0-0"
+  },
+  "type": "object",
+  "description": "A user engaged with a short video.",
+  "additionalProperties": false,
+  "properties": {
+    "video_id": {
+      "type": "string",
+      "description": "Stable video identifier."
+    },
+    "author_id": {
+      "type": "string",
+      "description": "Stable creator identifier."
+    },
+    "play_id": {
+      "type": "string",
+      "description": "Client-generated playback id."
+    },
+    "engagement_id": {
+      "type": "string",
+      "description": "Client-generated engagement id."
+    },
+    "action": {
+      "type": "string",
+      "description": "Engagement action, for example like, comment, share, or follow."
+    }
+  },
+  "required": [
+    "video_id",
+    "engagement_id",
+    "action"
+  ]
+}

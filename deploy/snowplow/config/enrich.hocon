@@ -1,0 +1,22 @@
+enrich {
+  streams {
+    in {
+      raw = "snowplow_raw_events"
+    }
+    out {
+      enriched = "snowplow_enriched_events"
+      bad = "snowplow_bad_events"
+      pii = "snowplow_pii_events"
+    }
+  }
+}
+
+source {
+  type = "kafka"
+  brokers = "redpanda:9092"
+}
+
+sink {
+  type = "kafka"
+  brokers = "redpanda:9092"
+}

@@ -1,0 +1,10 @@
+collector {
+  interface = "0.0.0.0"
+  port = 8080
+}
+
+sink {
+  enabled = "kafka"
+  brokers = "redpanda:9092"
+  topic = "snowplow_raw_events"
+}

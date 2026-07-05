@@ -1,0 +1,82 @@
+version: 2
+
+models:
+  - name: dwd_app_behavior_events
+    description: Cleaned behavior-event detail table with normalized identity, app, time, and property fields.
+    columns:
+      - name: event_id
+        tests:
+          - not_null
+          - unique
+      - name: event_name
+        tests:
+          - accepted_values:
+              values:
+                - product_exposed
+                - product_clicked
+                - page_stay
+                - add_to_cart
+      - name: app_id
+        tests:
+          - not_null
+      - name: event_date
+        tests:
+          - not_null
+
+  - name: fact_product_exposures
+    columns:
+      - name: event_id
+        tests:
+          - not_null
+          - unique
+      - name: product_id
+        tests:
+          - not_null
+      - name: exposure_id
+        tests:
+          - not_null
+
+  - name: fact_product_clicks
+    columns:
+      - name: event_id
+        tests:
+          - not_null
+          - unique
+      - name: product_id
+        tests:
+          - not_null
+      - name: click_id
+        tests:
+          - not_null
+
+  - name: fact_page_stays
+    columns:
+      - name: event_id
+        tests:
+          - not_null
+          - unique
+      - name: stay_id
+        tests:
+          - not_null
+
+  - name: fact_cart_adds
+    columns:
+      - name: event_id
+        tests:
+          - not_null
+          - unique
+      - name: product_id
+        tests:
+          - not_null
+      - name: sku_id
+        tests:
+          - not_null
+
+  - name: ads_product_behavior_daily
+    columns:
+      - name: event_date
+        tests:
+          - not_null
+      - name: product_id
+        tests:
+          - not_null

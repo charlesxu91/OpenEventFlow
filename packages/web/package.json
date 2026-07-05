@@ -1,0 +1,17 @@
+{
+  "name": "@openeventflow/web",
+  "version": "0.1.0",
+  "description": "OpenEventFlow browser SDK.",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@openeventflow/core": "0.1.0"
+  }
+}

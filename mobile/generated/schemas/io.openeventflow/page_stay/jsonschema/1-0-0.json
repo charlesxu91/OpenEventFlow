@@ -1,0 +1,35 @@
+{
+  "$schema": "http://iglucentral.com/schemas/com.snowplowanalytics.self-desc/schema/jsonschema/1-0-0#",
+  "self": {
+    "vendor": "io.openeventflow",
+    "name": "page_stay",
+    "format": "jsonschema",
+    "version": "1-0-0"
+  },
+  "type": "object",
+  "description": "A user stayed on a logical page for a measured duration.",
+  "additionalProperties": false,
+  "properties": {
+    "page": {
+      "type": "string",
+      "description": "Logical page name."
+    },
+    "duration_ms": {
+      "type": "integer",
+      "description": "Stay duration in milliseconds."
+    },
+    "stay_id": {
+      "type": "string",
+      "description": "Client-generated id for stay deduplication."
+    },
+    "exit_reason": {
+      "type": "string",
+      "description": "Why the page stay ended."
+    }
+  },
+  "required": [
+    "page",
+    "duration_ms",
+    "stay_id"
+  ]
+}

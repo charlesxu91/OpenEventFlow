@@ -1,0 +1,11 @@
+openeventflow_clickhouse:
+  target: dev
+  outputs:
+    dev:
+      type: clickhouse
+      schema: openeventflow
+      host: localhost
+      port: 8123
+      user: openeventflow
+      password: openeventflow
+      secure: false

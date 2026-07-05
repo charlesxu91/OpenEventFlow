@@ -1,0 +1,52 @@
+{
+  "$schema": "http://iglucentral.com/schemas/com.snowplowanalytics.self-desc/schema/jsonschema/1-0-0#",
+  "self": {
+    "vendor": "io.openeventflow",
+    "name": "video_played",
+    "format": "jsonschema",
+    "version": "1-0-0"
+  },
+  "type": "object",
+  "description": "A short video started playback.",
+  "additionalProperties": false,
+  "properties": {
+    "video_id": {
+      "type": "string",
+      "description": "Stable video identifier."
+    },
+    "author_id": {
+      "type": "string",
+      "description": "Stable creator identifier."
+    },
+    "play_id": {
+      "type": "string",
+      "description": "Client-generated playback id."
+    },
+    "page": {
+      "type": "string",
+      "description": "Logical feed page."
+    },
+    "position": {
+      "type": "integer",
+      "description": "Zero-based item position in the feed."
+    },
+    "autoplay": {
+      "type": "boolean",
+      "description": "Whether playback was automatic."
+    },
+    "network_type": {
+      "type": "string",
+      "description": "Current network type."
+    },
+    "recommend_trace_id": {
+      "type": "string",
+      "description": "Recommendation request trace id."
+    }
+  },
+  "required": [
+    "video_id",
+    "play_id",
+    "page",
+    "position"
+  ]
+}

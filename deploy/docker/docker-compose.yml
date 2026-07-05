@@ -1,0 +1,54 @@
+services:
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:v24.2.9
+    command:
+      - redpanda
+      - start
+      - --overprovisioned
+      - --smp
+      - "1"
+      - --memory
+      - 1G
+      - --reserve-memory
+      - 0M
+      - --node-id
+      - "0"
+      - --check=false
+      - --kafka-addr
+      - internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr
+      - internal://redpanda:9092,external://localhost:9092
+    ports:
+      - "9092:19092"
+      - "9644:9644"
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.8
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    environment:
+      CLICKHOUSE_DB: openeventflow
+      CLICKHOUSE_USER: openeventflow
+      CLICKHOUSE_PASSWORD: openeventflow
+    volumes:
+      - ./init-clickhouse.sql:/docker-entrypoint-initdb.d/init-clickhouse.sql:ro
+
+  topic-init:
+    image: docker.redpanda.com/redpandadata/redpanda:v24.2.9
+    depends_on:
+      - redpanda
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >
+        until rpk cluster info --brokers redpanda:9092; do
+          echo "waiting for redpanda";
+          sleep 1;
+        done;
+        rpk topic create snowplow_raw_events --brokers redpanda:9092 || true;
+        rpk topic create snowplow_enriched_events --brokers redpanda:9092 || true;
+        rpk topic create snowplow_bad_events --brokers redpanda:9092 || true;
+        rpk topic create app_behavior_valid --brokers redpanda:9092 || true;
+        rpk topic create app_exposure_events --brokers redpanda:9092 || true;
+        rpk topic create app_click_events --brokers redpanda:9092 || true;
+        rpk topic create app_cart_events --brokers redpanda:9092 || true;

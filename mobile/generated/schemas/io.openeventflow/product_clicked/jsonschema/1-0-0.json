@@ -1,0 +1,40 @@
+{
+  "$schema": "http://iglucentral.com/schemas/com.snowplowanalytics.self-desc/schema/jsonschema/1-0-0#",
+  "self": {
+    "vendor": "io.openeventflow",
+    "name": "product_clicked",
+    "format": "jsonschema",
+    "version": "1-0-0"
+  },
+  "type": "object",
+  "description": "A user clicked a product card or product entry point.",
+  "additionalProperties": false,
+  "properties": {
+    "product_id": {
+      "type": "string",
+      "description": "Stable product identifier."
+    },
+    "page": {
+      "type": "string",
+      "description": "Logical page name."
+    },
+    "position": {
+      "type": "integer",
+      "description": "Zero-based item position in the container."
+    },
+    "click_id": {
+      "type": "string",
+      "description": "Client-generated id for click deduplication."
+    },
+    "recommend_trace_id": {
+      "type": "string",
+      "description": "Recommendation request trace id."
+    }
+  },
+  "required": [
+    "product_id",
+    "page",
+    "position",
+    "click_id"
+  ]
+}

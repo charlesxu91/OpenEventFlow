@@ -1,0 +1,13 @@
+{
+  "name": "@openeventflow/tracking-plan-cli",
+  "version": "0.1.0",
+  "description": "Generate Snowplow/Iglu JSON Schemas and mobile event types from an OpenEventFlow tracking plan.",
+  "bin": {
+    "openeventflow-tracking-plan": "src/index.js"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "license": "Apache-2.0"
+}

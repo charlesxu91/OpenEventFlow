@@ -1,0 +1,15 @@
+{
+  "name": "@openeventflow/warehouse",
+  "version": "0.1.0",
+  "description": "Warehouse loaders and ClickHouse adapters for OpenEventFlow enriched events.",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./service": "./src/service.js"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "license": "Apache-2.0"
+}

@@ -1,0 +1,24 @@
+{
+  "name": "open-eventflow",
+  "version": "0.1.0",
+  "private": true,
+  "description": "End-to-end frontend event collection, streaming, warehousing, and consumption pipeline for large apps.",
+  "scripts": {
+    "test": "node --test tools/tracking-plan-cli/tests/*.test.js packages/core/tests/*.test.js packages/web/tests/*.test.js packages/react/tests/*.test.js packages/react-native/tests/*.test.js packages/collector/tests/*.test.js packages/warehouse/tests/*.test.js sdks/tests/*.test.js e2e/tests/*.test.js",
+    "test:mobile": "node scripts/test-mobile-toolchains.js",
+    "codegen": "node tools/tracking-plan-cli/src/index.js generate examples/tracking-plan.json mobile/generated",
+    "smoke:dbt": "node scripts/smoke-dbt-clickhouse.js",
+    "smoke:docker": "node scripts/smoke-docker-pipeline.js",
+    "smoke:docker:video": "node scripts/smoke-short-video-docker.js",
+    "publish:flutter:dry-run:cn": "cd sdks/flutter && HOME=/private/tmp PUB_HOSTED_URL=https://pub.flutter-io.cn dart pub publish --dry-run",
+    "verify": "npm test && npm run test:mobile && npm run smoke:dbt"
+  },
+  "workspaces": [
+    "tools/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "Apache-2.0"
+}

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OpenEventFlow Ecommerce UI E2E</title>
+    <style>
+      body { margin: 0; font-family: Inter, ui-sans-serif, system-ui, sans-serif; background: #f7f8fb; color: #172033; }
+      main { max-width: 1080px; margin: 0 auto; padding: 32px; }
+      h1 { margin: 0 0 20px; font-size: 28px; }
+      .grid { display: grid; grid-template-columns: minmax(260px, 360px) minmax(280px, 1fr); gap: 24px; align-items: start; }
+      .product, .detail, .warehouse { border: 1px solid #d9dee8; border-radius: 8px; background: #fff; padding: 18px; }
+      .product { text-align: left; cursor: pointer; }
+      .product strong { display: block; margin-bottom: 8px; font-size: 19px; }
+      button { min-height: 40px; border: 0; border-radius: 6px; padding: 0 14px; background: #1565c0; color: #fff; font-weight: 700; cursor: pointer; }
+      .metrics { display: grid; grid-template-columns: repeat(4, minmax(80px, 1fr)); gap: 10px; margin: 20px 0; }
+      .metric { border: 1px solid #d9dee8; border-radius: 8px; background: #fff; padding: 12px; }
+      .metric span { display: block; color: #5c667a; font-size: 13px; }
+      .metric strong { font-size: 24px; }
+      pre { overflow: auto; max-height: 360px; margin: 0; padding: 14px; border-radius: 6px; background: #101828; color: #d8e6ff; font-size: 12px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>OpenEventFlow Ecommerce UI E2E</h1>
+      <section class="grid">
+        <button class="product" data-testid="product-card" type="button">
+          <strong>Noise cancelling headphones</strong>
+          <span>sku-ui-100 - position 1 - recommendation rec-ui-abc</span>
+        </button>
+        <section class="detail" data-testid="detail-panel" hidden>
+          <h2>Product detail</h2>
+          <p>Blue edition, CNY 88.5</p>
+          <button data-testid="add-to-cart" type="button">Add to cart</button>
+        </section>
+      </section>
+      <section class="metrics" aria-label="Warehouse fact counts">
+        <div class="metric"><span>Exposure</span><strong data-testid="exposure-count">0</strong></div>
+        <div class="metric"><span>Click</span><strong data-testid="click-count">0</strong></div>
+        <div class="metric"><span>Stay</span><strong data-testid="stay-count">0</strong></div>
+        <div class="metric"><span>Cart</span><strong data-testid="cart-count">0</strong></div>
+      </section>
+      <section class="warehouse">
+        <h2>Warehouse snapshot</h2>
+        <pre data-testid="warehouse-json">{}</pre>
+      </section>
+    </main>
+    <script src="./openeventflow-browser.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

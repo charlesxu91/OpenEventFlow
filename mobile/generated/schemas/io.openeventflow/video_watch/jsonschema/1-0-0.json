@@ -1,0 +1,56 @@
+{
+  "$schema": "http://iglucentral.com/schemas/com.snowplowanalytics.self-desc/schema/jsonschema/1-0-0#",
+  "self": {
+    "vendor": "io.openeventflow",
+    "name": "video_watch",
+    "format": "jsonschema",
+    "version": "1-0-0"
+  },
+  "type": "object",
+  "description": "A short video playback session ended with watch metrics.",
+  "additionalProperties": false,
+  "properties": {
+    "video_id": {
+      "type": "string",
+      "description": "Stable video identifier."
+    },
+    "author_id": {
+      "type": "string",
+      "description": "Stable creator identifier."
+    },
+    "play_id": {
+      "type": "string",
+      "description": "Client-generated playback id."
+    },
+    "watch_id": {
+      "type": "string",
+      "description": "Client-generated watch id."
+    },
+    "duration_ms": {
+      "type": "integer",
+      "description": "Foreground watch duration in milliseconds."
+    },
+    "play_duration_ms": {
+      "type": "integer",
+      "description": "Video media duration in milliseconds."
+    },
+    "completion_rate": {
+      "type": "number",
+      "description": "Watched ratio from 0 to 1."
+    },
+    "completed": {
+      "type": "boolean",
+      "description": "Whether playback reached completion."
+    },
+    "exit_reason": {
+      "type": "string",
+      "description": "Why the watch session ended."
+    }
+  },
+  "required": [
+    "video_id",
+    "play_id",
+    "watch_id",
+    "duration_ms"
+  ]
+}
