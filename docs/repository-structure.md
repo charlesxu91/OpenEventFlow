@@ -3,7 +3,7 @@
 This repository is organized as a monorepo so SDKs, collector code, generated contracts, warehouse models, and e2e tests can evolve together.
 
 ```text
-open-eventflow/
+OpenEventFlow/
   .github/
     ISSUE_TEMPLATE/           GitHub issue templates
     workflows/                CI workflows

@@ -2,6 +2,8 @@
 
 [中文 README](README.zh-CN.md)
 
+![OpenEventFlow hero](docs/assets/openeventflow-hero.png)
+
 OpenEventFlow is an open-source end-to-end event data pipeline for large apps. It connects frontend and mobile instrumentation with validated event streams, warehouse models, and downstream data consumption.
 
 It gives product, growth, data, and engineering teams a contract-first way to collect user behavior from Web, React, React Native, Android, iOS, and Flutter apps, deliver those events into Kafka/Redpanda, model them in ClickHouse-style warehouse layers, and make the results reliable for BI, recommendations, ads, experimentation, and other consumers.

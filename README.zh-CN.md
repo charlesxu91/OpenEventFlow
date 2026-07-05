@@ -2,6 +2,8 @@
 
 [English README](README.md)
 
+![OpenEventFlow hero](docs/assets/openeventflow-hero.png)
+
 OpenEventFlow 是一个面向大型 App 的开源端到端事件数据流项目。它把前端和移动端埋点、事件校验、Kafka/Redpanda 流、ClickHouse 数仓建模，以及最终的数据消费连接成一条完整链路。
 
 它提供一套 contract-first 的方式，把 Web、React、React Native、Android、iOS、Flutter 端产生的用户行为事件，稳定地采集、校验、发送到 Kafka/Redpanda，进入 ClickHouse 风格的数仓分层，并服务 BI、推荐、广告、实验、数据产品等下游消费者。

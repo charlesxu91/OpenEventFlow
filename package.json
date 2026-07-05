@@ -1,5 +1,5 @@
 {
-  "name": "open-eventflow",
+  "name": "openeventflow",
   "version": "0.1.0",
   "private": true,
   "description": "End-to-end frontend event collection, streaming, warehousing, and consumption pipeline for large apps.",

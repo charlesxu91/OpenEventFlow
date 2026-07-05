@@ -1,7 +1,7 @@
 name: open_event_flow
 description: End-to-end event collection client for Flutter apps.
 version: 0.1.0
-homepage: https://github.com/openeventflow/open-eventflow
+homepage: https://github.com/charlesxu91/OpenEventFlow
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
