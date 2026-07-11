@@ -29,6 +29,50 @@
     "recommend_trace_id": {
       "type": "string",
       "description": "Recommendation request trace id."
+    },
+    "request_id": {
+      "type": "string",
+      "description": "Recommendation request identifier."
+    },
+    "impression_id": {
+      "type": "string",
+      "description": "Stable attribution identifier."
+    },
+    "delivery_id": {
+      "type": "string",
+      "description": "Related server delivery identifier."
+    },
+    "sku_id": {
+      "type": "string",
+      "description": "Stable SKU identifier."
+    },
+    "surface": {
+      "type": "string",
+      "description": "Recommendation surface."
+    },
+    "candidate_source": {
+      "type": "string",
+      "description": "Candidate generator."
+    },
+    "model_version": {
+      "type": "string",
+      "description": "Online model version."
+    },
+    "feature_set_version": {
+      "type": "string",
+      "description": "Online feature-set version."
+    },
+    "experiment_id": {
+      "type": "string",
+      "description": "Experiment identifier."
+    },
+    "experiment_treatment": {
+      "type": "string",
+      "description": "Experiment treatment."
+    },
+    "recommendation_generation": {
+      "type": "string",
+      "description": "Refresh generation identifier."
     }
   },
   "required": [

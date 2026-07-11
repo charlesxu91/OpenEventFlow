@@ -1,0 +1,72 @@
+{
+  "$schema": "http://iglucentral.com/schemas/com.snowplowanalytics.self-desc/schema/jsonschema/1-0-0#",
+  "self": {
+    "vendor": "io.openeventflow",
+    "name": "order_refunded",
+    "format": "jsonschema",
+    "version": "1-0-0"
+  },
+  "type": "object",
+  "description": "The authoritative payment service refunded an order line.",
+  "additionalProperties": false,
+  "properties": {
+    "refund_id": {
+      "type": "string",
+      "description": "Authoritative refund identifier."
+    },
+    "order_id": {
+      "type": "string",
+      "description": "Authoritative order identifier."
+    },
+    "order_line_id": {
+      "type": "string",
+      "description": "Authoritative order-line identifier."
+    },
+    "product_id": {
+      "type": "string",
+      "description": "Stable product identifier."
+    },
+    "sku_id": {
+      "type": "string",
+      "description": "Stable SKU identifier."
+    },
+    "quantity": {
+      "type": "integer",
+      "description": "Refunded quantity."
+    },
+    "refund_amount": {
+      "type": "number",
+      "description": "Authoritative refunded amount."
+    },
+    "currency": {
+      "type": "string",
+      "description": "ISO currency code."
+    },
+    "reason": {
+      "type": "string",
+      "description": "Refund reason code."
+    },
+    "request_id": {
+      "type": "string",
+      "description": "Attributed recommendation request."
+    },
+    "impression_id": {
+      "type": "string",
+      "description": "Attributed recommendation impression."
+    },
+    "delivery_id": {
+      "type": "string",
+      "description": "Attributed delivery identifier."
+    }
+  },
+  "required": [
+    "refund_id",
+    "order_id",
+    "order_line_id",
+    "product_id",
+    "sku_id",
+    "quantity",
+    "refund_amount",
+    "currency"
+  ]
+}

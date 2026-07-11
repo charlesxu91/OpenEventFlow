@@ -176,6 +176,7 @@ npm run smoke:docker:video
 - [Stay Duration](docs/stay-duration.md)
 - [Warehouse](docs/warehouse.md)
 - [Local Pipeline](docs/local-pipeline.md)
+- [Recommendation Pipeline](docs/recommendation-pipeline.md)
 - [E2E Testing](docs/e2e-testing.md)
 - [Roadmap](ROADMAP.md)
 

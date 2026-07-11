@@ -1,0 +1,126 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: openeventflow-collector-auth
+type: Opaque
+stringData:
+  api-keys: local-recsys-collector-key
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: openeventflow-collector
+spec:
+  selector:
+    app: openeventflow-collector
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openeventflow-collector
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: openeventflow-collector
+  template:
+    metadata:
+      labels:
+        app: openeventflow-collector
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: collector
+          image: openeventflow-collector:local
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: BROKER_TYPE
+              value: kafka
+            - name: KAFKA_BROKERS
+              value: kafka.recsys-infra.svc.cluster.local:9092
+            - name: KAFKA_CLIENT_ID
+              value: openeventflow-collector
+            - name: RAW_TOPIC
+              value: recsys.client-raw.v1
+            - name: VALID_TOPIC
+              value: recsys.client-behavior.v1
+            - name: BAD_TOPIC
+              value: recsys.client-bad.v1
+            - name: MAX_BODY_BYTES
+              value: "1048576"
+            - name: MAX_BATCH_SIZE
+              value: "500"
+            - name: COLLECTOR_API_KEYS
+              valueFrom:
+                secretKeyRef:
+                  name: openeventflow-collector-auth
+                  key: api-keys
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests: {cpu: 100m, memory: 128Mi}
+            limits: {cpu: "1", memory: 512Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: {drop: ["ALL"]}
+            readOnlyRootFilesystem: true
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    app: openeventflow-collector
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: openeventflow-collector
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: openeventflow-collector
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: openeventflow-collector
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: openeventflow-collector
+  minReplicas: 2
+  maxReplicas: 10
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+    scaleUp:
+      stabilizationWindowSeconds: 30
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 65
