@@ -117,6 +117,8 @@ function mapEventsToWarehouseRows(events) {
     fact_product_clicks: [],
     fact_page_stays: [],
     fact_cart_adds: [],
+    fact_recommendation_events: [],
+    fact_order_events: [],
     fact_video_exposures: [],
     fact_video_plays: [],
     fact_video_watches: [],
@@ -131,7 +133,14 @@ function mapEventsToWarehouseRows(events) {
     rowsByTable.ods_snowplow_enriched_events.push(odsRow(event));
     rowsByTable.dwd_app_behavior_events.push(dwdRow(event));
 
-    if (event.event_name === "product_exposed") {
+    if (isRecommendationEvent(event)) {
+      rowsByTable.fact_recommendation_events.push(recommendationEventRow(event));
+    }
+    if (isOrderEvent(event)) {
+      rowsByTable.fact_order_events.push(orderEventRow(event));
+    }
+
+    if (event.event_name === "product_exposed" || event.event_name === "product_impressed") {
       const row = exposureRow(event);
       rowsByTable.fact_product_exposures.push(row);
       incrementProductDaily(productDaily, row.event_date, row.product_id, { exposures: 1 });
@@ -181,6 +190,69 @@ function mapEventsToWarehouseRows(events) {
   rowsByTable.ads_product_behavior_daily.push(...productDaily.values());
   rowsByTable.ads_video_behavior_daily.push(...videoDaily.values());
   return rowsByTable;
+}
+
+function isRecommendationEvent(event) {
+  return [
+    "recommendation_delivered",
+    "product_impressed",
+    "product_exposed",
+    "product_clicked",
+    "favorite_added",
+    "add_to_cart"
+  ].includes(event.event_name);
+}
+
+function isOrderEvent(event) {
+  return ["order_created", "order_paid", "order_cancelled", "order_refunded"].includes(event.event_name);
+}
+
+function recommendationEventRow(event) {
+  const properties = event.properties || {};
+  return {
+    event_id: event.event_id,
+    event_name: event.event_name,
+    event_date: eventDate(event.client_time),
+    event_time: event.client_time,
+    user_id: userId(event),
+    anonymous_id: anonymousId(event),
+    request_id: properties.request_id || properties.recommend_trace_id || null,
+    impression_id: properties.impression_id || properties.exposure_id || null,
+    delivery_id: properties.delivery_id || null,
+    product_id: properties.product_id,
+    sku_id: properties.sku_id || null,
+    surface: properties.surface || properties.page || null,
+    position: properties.position === undefined ? null : properties.position,
+    candidate_source: properties.candidate_source || null,
+    model_version: properties.model_version || null,
+    feature_set_version: properties.feature_set_version || null,
+    experiment_id: properties.experiment_id || null,
+    experiment_treatment: properties.experiment_treatment || null,
+    recommendation_generation: properties.recommendation_generation || null
+  };
+}
+
+function orderEventRow(event) {
+  const properties = event.properties || {};
+  return {
+    event_id: event.event_id,
+    event_name: event.event_name,
+    event_date: eventDate(event.client_time),
+    event_time: event.client_time,
+    user_id: userId(event),
+    order_id: properties.order_id,
+    order_line_id: properties.order_line_id,
+    product_id: properties.product_id,
+    sku_id: properties.sku_id,
+    quantity: properties.quantity,
+    amount: properties.paid_amount === undefined
+      ? (properties.refund_amount === undefined ? properties.unit_price * properties.quantity : properties.refund_amount)
+      : properties.paid_amount,
+    currency: properties.currency || null,
+    request_id: properties.request_id || null,
+    impression_id: properties.impression_id || null,
+    delivery_id: properties.delivery_id || null
+  };
 }
 
 function odsRow(event) {

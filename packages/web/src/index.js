@@ -1,4 +1,5 @@
 const { MemoryEventStore, createAnalytics } = require("../../core/src/index");
+const { IndexedDBEventStore, createIndexedDBAdapter } = require("./indexeddb-event-store");
 
 function createFetchTransport(endpoint, fetchImpl = globalThis.fetch) {
   if (!endpoint) {
@@ -114,8 +115,10 @@ function bindWebLifecycleStays({ analytics, document, window, stayKeys = ["scree
 }
 
 module.exports = {
+  IndexedDBEventStore,
   bindWebLifecycleStays,
   bindClickAutotrack,
   createFetchTransport,
-  createWebAnalytics
+  createWebAnalytics,
+  createIndexedDBAdapter
 };

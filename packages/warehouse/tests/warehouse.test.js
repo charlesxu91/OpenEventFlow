@@ -53,6 +53,7 @@ test("warehouse loader writes ODS, DWD, fact, and ADS rows for ecommerce events"
       fact_product_clicks: 1,
       fact_page_stays: 1,
       fact_cart_adds: 1,
+      fact_recommendation_events: 3,
       ads_product_behavior_daily: 1
     }
   });
@@ -83,6 +84,76 @@ test("warehouse loader writes ODS, DWD, fact, and ADS rows for ecommerce events"
     cart_adds: 1,
     cart_quantity: 1,
     cart_gmv: 199
+  });
+});
+
+test("warehouse preserves recommendation attribution and authoritative order labels", async () => {
+  const adapter = createInMemoryWarehouseAdapter();
+  const loader = createWarehouseLoader({ adapter });
+  const attribution = {
+    request_id: "req-1",
+    impression_id: "imp-1",
+    delivery_id: "del-1",
+    product_id: "product-1",
+    sku_id: "sku-1",
+    surface: "HOME",
+    position: 3,
+    candidate_source: "USER_ANN",
+    model_version: "rank-v7",
+    feature_set_version: "features-v3",
+    experiment_id: "exp-ranking",
+    experiment_treatment: "treatment",
+    recommendation_generation: "generation-2"
+  };
+
+  await loader.load([
+    enrichedEvent("evt-delivery", "recommendation_delivered", attribution),
+    enrichedEvent("evt-impression", "product_impressed", {
+      ...attribution,
+      visible_ratio: 0.8,
+      duration_ms: 600
+    }),
+    enrichedEvent("evt-paid", "order_paid", {
+      payment_id: "payment-1",
+      order_id: "order-1",
+      order_line_id: "line-1",
+      product_id: "product-1",
+      sku_id: "sku-1",
+      quantity: 2,
+      paid_amount: 398,
+      currency: "CNY",
+      request_id: "req-1",
+      impression_id: "imp-1",
+      delivery_id: "del-1"
+    })
+  ]);
+
+  assert.deepEqual(adapter.table("fact_recommendation_events")[0], {
+    event_id: "evt-delivery",
+    event_name: "recommendation_delivered",
+    event_date: "1970-01-01",
+    event_time: 1400,
+    user_id: "user-42",
+    anonymous_id: "anon-1",
+    ...attribution
+  });
+  assert.equal(adapter.table("fact_product_exposures")[0].product_id, "product-1");
+  assert.deepEqual(adapter.table("fact_order_events")[0], {
+    event_id: "evt-paid",
+    event_name: "order_paid",
+    event_date: "1970-01-01",
+    event_time: 1500,
+    user_id: "user-42",
+    order_id: "order-1",
+    order_line_id: "line-1",
+    product_id: "product-1",
+    sku_id: "sku-1",
+    quantity: 2,
+    amount: 398,
+    currency: "CNY",
+    request_id: "req-1",
+    impression_id: "imp-1",
+    delivery_id: "del-1"
   });
 });
 
@@ -218,7 +289,10 @@ function enrichedEvent(eventId, eventName, properties) {
     product_exposed: 1000,
     product_clicked: 1100,
     page_stay: 1200,
-    add_to_cart: 1300
+    add_to_cart: 1300,
+    recommendation_delivered: 1400,
+    product_impressed: 1450,
+    order_paid: 1500
   };
   const client_time = clientTimeByName[eventName];
   return {

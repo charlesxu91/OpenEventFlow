@@ -1,0 +1,24 @@
+FROM node:22.19.0-alpine
+
+WORKDIR /app
+COPY package.json package-lock.json ./
+COPY packages/collector packages/collector
+COPY packages/core packages/core
+COPY packages/react packages/react
+COPY packages/react-native packages/react-native
+COPY packages/snowplow-adapter packages/snowplow-adapter
+COPY packages/warehouse packages/warehouse
+COPY packages/web packages/web
+COPY tools tools
+RUN npm ci --omit=dev --workspace=@openeventflow/collector
+
+COPY examples/tracking-plan.json examples/tracking-plan.json
+
+ENV NODE_ENV=production \
+    HOST=0.0.0.0 \
+    PORT=8080 \
+    TRACKING_PLAN_PATH=/app/examples/tracking-plan.json
+
+USER node
+EXPOSE 8080
+CMD ["node", "packages/collector/src/server.js"]

@@ -107,6 +107,52 @@ CREATE TABLE IF NOT EXISTS openeventflow.fact_cart_adds
 ENGINE = MergeTree
 ORDER BY (event_date, product_id, event_time);
 
+CREATE TABLE IF NOT EXISTS openeventflow.fact_recommendation_events
+(
+    event_id String,
+    event_name String,
+    event_date Date,
+    event_time UInt64,
+    user_id Nullable(String),
+    anonymous_id Nullable(String),
+    request_id Nullable(String),
+    impression_id Nullable(String),
+    delivery_id Nullable(String),
+    product_id String,
+    sku_id Nullable(String),
+    surface Nullable(String),
+    position Nullable(Int64),
+    candidate_source Nullable(String),
+    model_version Nullable(String),
+    feature_set_version Nullable(String),
+    experiment_id Nullable(String),
+    experiment_treatment Nullable(String),
+    recommendation_generation Nullable(String)
+)
+ENGINE = MergeTree
+ORDER BY (event_date, event_name, product_id, event_time);
+
+CREATE TABLE IF NOT EXISTS openeventflow.fact_order_events
+(
+    event_id String,
+    event_name String,
+    event_date Date,
+    event_time UInt64,
+    user_id Nullable(String),
+    order_id String,
+    order_line_id String,
+    product_id String,
+    sku_id String,
+    quantity Int64,
+    amount Float64,
+    currency Nullable(String),
+    request_id Nullable(String),
+    impression_id Nullable(String),
+    delivery_id Nullable(String)
+)
+ENGINE = MergeTree
+ORDER BY (event_date, order_id, order_line_id, event_time);
+
 CREATE TABLE IF NOT EXISTS openeventflow.ads_product_behavior_daily
 (
     event_date Date,

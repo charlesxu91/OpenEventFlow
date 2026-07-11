@@ -1,0 +1,68 @@
+{
+  "$schema": "http://iglucentral.com/schemas/com.snowplowanalytics.self-desc/schema/jsonschema/1-0-0#",
+  "self": {
+    "vendor": "io.openeventflow",
+    "name": "order_paid",
+    "format": "jsonschema",
+    "version": "1-0-0"
+  },
+  "type": "object",
+  "description": "The authoritative payment service confirmed payment for an order line.",
+  "additionalProperties": false,
+  "properties": {
+    "payment_id": {
+      "type": "string",
+      "description": "Authoritative payment identifier."
+    },
+    "order_id": {
+      "type": "string",
+      "description": "Authoritative order identifier."
+    },
+    "order_line_id": {
+      "type": "string",
+      "description": "Authoritative order-line identifier."
+    },
+    "product_id": {
+      "type": "string",
+      "description": "Stable product identifier."
+    },
+    "sku_id": {
+      "type": "string",
+      "description": "Stable SKU identifier."
+    },
+    "quantity": {
+      "type": "integer",
+      "description": "Paid quantity."
+    },
+    "paid_amount": {
+      "type": "number",
+      "description": "Authoritative paid amount for this line."
+    },
+    "currency": {
+      "type": "string",
+      "description": "ISO currency code."
+    },
+    "request_id": {
+      "type": "string",
+      "description": "Attributed recommendation request."
+    },
+    "impression_id": {
+      "type": "string",
+      "description": "Attributed recommendation impression."
+    },
+    "delivery_id": {
+      "type": "string",
+      "description": "Attributed delivery identifier."
+    }
+  },
+  "required": [
+    "payment_id",
+    "order_id",
+    "order_line_id",
+    "product_id",
+    "sku_id",
+    "quantity",
+    "paid_amount",
+    "currency"
+  ]
+}
