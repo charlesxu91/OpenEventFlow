@@ -24,7 +24,10 @@ function createCollectorRuntime(options = {}) {
   });
   const server = createHttpCollectorServer({
     collector,
-    path: options.path || process.env.COLLECTOR_PATH || "/collect"
+    path: options.path || process.env.COLLECTOR_PATH || "/collect",
+    apiKey: options.apiKey === undefined ? process.env.COLLECTOR_API_KEY : options.apiKey,
+    maxBodyBytes: options.maxBodyBytes || Number(process.env.MAX_BODY_BYTES || 1024 * 1024),
+    readiness: options.readiness
   });
 
   return { broker, collector, server };

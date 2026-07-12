@@ -1,4 +1,5 @@
 const http = require("node:http");
+const { timingSafeEqual } = require("node:crypto");
 
 function createInMemoryTopicBroker() {
   const topics = new Map();
@@ -92,13 +93,13 @@ function createCollector(options) {
       let enriched = 0;
       let bad = 0;
       for (const event of events) {
-        config.broker.publish(config.rawTopic, event);
+        await publish(config.broker, config.rawTopic, event);
         const validation = config.registry.validate(event);
         if (validation.valid) {
-          config.broker.publish(config.validTopic, config.enrich(event, config.clock));
+          await publish(config.broker, config.validTopic, config.enrich(event, config.clock));
           enriched += 1;
         } else {
-          config.broker.publish(config.badTopic, {
+          await publish(config.broker, config.badTopic, {
             ...validation,
             event,
             collector_time: config.clock()
@@ -112,25 +113,51 @@ function createCollector(options) {
   };
 }
 
-function createHttpCollectorServer({ collector, path = "/collect" }) {
+function createHttpCollectorServer({
+  collector,
+  path = "/collect",
+  apiKey,
+  maxBodyBytes = 1024 * 1024,
+  readiness = async () => true
+}) {
   if (!collector || typeof collector.collect !== "function") {
     throw new Error("collector.collect is required");
   }
 
   return http.createServer(async (request, response) => {
-    if (request.method !== "POST" || request.url.split("?")[0] !== path) {
+    const requestPath = request.url.split("?")[0];
+    if (request.method === "GET" && requestPath === "/healthz") {
+      sendJson(response, 200, { status: "ok" });
+      return;
+    }
+    if (request.method === "GET" && requestPath === "/readyz") {
+      const ready = await readiness();
+      sendJson(response, ready ? 200 : 503, { status: ready ? "ready" : "not_ready" });
+      return;
+    }
+    if (request.method !== "POST" || requestPath !== path) {
       sendJson(response, 404, { error: "not_found" });
       return;
     }
 
+    if (apiKey && !safeEqual(request.headers["x-api-key"], apiKey)) {
+      sendJson(response, 401, { error: "unauthorized" });
+      return;
+    }
+
     try {
-      const payload = JSON.parse(await readRequestBody(request));
+      const payload = JSON.parse(await readRequestBody(request, maxBodyBytes));
       const events = Array.isArray(payload) ? payload : payload.events;
       const result = await collector.collect(events);
       sendJson(response, 202, result);
     } catch (error) {
-      sendJson(response, 400, {
-        error: "bad_request",
+      const statusCode = error.code === "PAYLOAD_TOO_LARGE" ? 413
+        : error.code === "BROKER_UNAVAILABLE" ? 503
+          : 400;
+      sendJson(response, statusCode, {
+        error: statusCode === 413 ? "payload_too_large"
+          : statusCode === 503 ? "service_unavailable"
+            : "bad_request",
         message: error.message
       });
     }
@@ -162,16 +189,49 @@ function matchesType(value, expectedType) {
   return typeof value === expectedType;
 }
 
-function readRequestBody(request) {
+function readRequestBody(request, maxBodyBytes) {
   return new Promise((resolve, reject) => {
     let body = "";
+    let bytes = 0;
+    let settled = false;
     request.setEncoding("utf8");
     request.on("data", (chunk) => {
+      if (settled) return;
+      bytes += Buffer.byteLength(chunk);
+      if (bytes > maxBodyBytes) {
+        settled = true;
+        const error = new Error(`request body exceeds ${maxBodyBytes} bytes`);
+        error.code = "PAYLOAD_TOO_LARGE";
+        reject(error);
+        return;
+      }
       body += chunk;
     });
-    request.on("end", () => resolve(body || "{}"));
-    request.on("error", reject);
+    request.on("end", () => {
+      if (!settled) resolve(body || "{}");
+    });
+    request.on("error", (error) => {
+      if (!settled) reject(error);
+    });
   });
+}
+
+async function publish(broker, topic, message) {
+  try {
+    await broker.publish(topic, message);
+  } catch (cause) {
+    const error = new Error(`failed to publish to ${topic}`);
+    error.code = "BROKER_UNAVAILABLE";
+    error.cause = cause;
+    throw error;
+  }
+}
+
+function safeEqual(candidate, expected) {
+  if (typeof candidate !== "string") return false;
+  const left = Buffer.from(candidate);
+  const right = Buffer.from(expected);
+  return left.length === right.length && timingSafeEqual(left, right);
 }
 
 function sendJson(response, statusCode, payload) {

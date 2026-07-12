@@ -86,12 +86,100 @@ test("http collector accepts a JSON event batch and returns collector counts", a
   assert.equal(broker.topic("snowplow_enriched_events")[0].event_id, "evt-http");
 });
 
-function postJson(server, path, payload) {
+test("collector awaits broker acknowledgements before accepting a batch", async () => {
+  const published = [];
+  const broker = {
+    async publish(topic, message) {
+      await new Promise((resolve) => setImmediate(resolve));
+      published.push({ topic, message });
+    }
+  };
+  const collector = createCollector({
+    broker,
+    registry: createTrackingPlanRegistry(trackingPlan)
+  });
+
+  const result = await collector.collect([validEvent()]);
+
+  assert.deepEqual(result, { accepted: 1, enriched: 1, bad: 0 });
+  assert.deepEqual(published.map(({ topic }) => topic), [
+    "snowplow_raw_events",
+    "snowplow_enriched_events"
+  ]);
+});
+
+test("http collector exposes health and readiness without authentication", async () => {
+  const server = createHttpCollectorServer({
+    collector: { collect: async () => ({ accepted: 0, enriched: 0, bad: 0 }) },
+    apiKey: "secret",
+    readiness: async () => true
+  });
+
+  const health = await request(server, { method: "GET", path: "/healthz" });
+  const ready = await request(server, { method: "GET", path: "/readyz" });
+
+  assert.equal(health.statusCode, 200);
+  assert.deepEqual(JSON.parse(health.body), { status: "ok" });
+  assert.equal(ready.statusCode, 200);
+  assert.deepEqual(JSON.parse(ready.body), { status: "ready" });
+});
+
+test("http collector requires the configured API key", async () => {
+  const server = createHttpCollectorServer({
+    collector: { collect: async () => ({ accepted: 0, enriched: 0, bad: 0 }) },
+    apiKey: "secret"
+  });
+
+  const missing = await postJson(server, "/collect", { events: [] });
+  const invalid = await postJson(server, "/collect", { events: [] }, { "x-api-key": "wrong" });
+  const valid = await postJson(server, "/collect", { events: [] }, { "x-api-key": "secret" });
+
+  assert.equal(missing.statusCode, 401);
+  assert.equal(invalid.statusCode, 401);
+  assert.equal(valid.statusCode, 202);
+});
+
+test("http collector rejects request bodies over the configured limit", async () => {
+  const server = createHttpCollectorServer({
+    collector: { collect: async () => ({ accepted: 0, enriched: 0, bad: 0 }) },
+    maxBodyBytes: 10
+  });
+
+  const response = await postJson(server, "/collect", { events: [validEvent()] });
+
+  assert.equal(response.statusCode, 413);
+  assert.equal(JSON.parse(response.body).error, "payload_too_large");
+});
+
+test("http collector reports broker failures as unavailable", async () => {
+  const server = createHttpCollectorServer({
+    collector: createCollector({
+      broker: { publish: async () => { throw new Error("broker unavailable"); } },
+      registry: createTrackingPlanRegistry(trackingPlan)
+    })
+  });
+
+  const response = await postJson(server, "/collect", { events: [validEvent()] });
+
+  assert.equal(response.statusCode, 503);
+  assert.equal(JSON.parse(response.body).error, "service_unavailable");
+});
+
+function postJson(server, path, payload, headers = {}) {
+  return request(server, {
+    method: "POST",
+    path,
+    headers: { "content-type": "application/json", ...headers },
+    body: JSON.stringify(payload)
+  });
+}
+
+function request(server, { method, path, headers = {}, body = "" }) {
   return new Promise((resolve, reject) => {
-    const request = new PassThrough();
-    request.method = "POST";
-    request.url = path;
-    request.headers = { "content-type": "application/json" };
+    const incoming = new PassThrough();
+    incoming.method = method;
+    incoming.url = path;
+    incoming.headers = headers;
     const response = {
       statusCode: 200,
       body: "",
@@ -103,8 +191,8 @@ function postJson(server, path, payload) {
         resolve({ statusCode: this.statusCode, body: this.body });
       }
     };
-    server.emit("request", request, response);
-    request.on("error", reject);
-    request.end(JSON.stringify(payload));
+    server.emit("request", incoming, response);
+    incoming.on("error", reject);
+    incoming.end(body);
   });
 }
