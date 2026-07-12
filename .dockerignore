@@ -1,0 +1,10 @@
+.git
+.github
+node_modules
+mobile
+sdks
+streaming/**/build
+warehouse
+e2e
+docs/assets
+

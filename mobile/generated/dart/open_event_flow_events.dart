@@ -6,6 +6,126 @@ abstract interface class OpenEventFlowGeneratedEvent {
   Map<String, Object?> toJson();
 }
 
+class RecommendationDeliveredEvent implements OpenEventFlowGeneratedEvent {
+  static const String recommendationDeliveredSchema = "iglu:io.openeventflow/recommendation_delivered/jsonschema/1-0-0";
+
+  final String deliveryId;
+  final String requestId;
+  final String impressionId;
+  final String productId;
+  final String? skuId;
+  final String surface;
+  final int position;
+  final String? candidateSource;
+  final String? modelVersion;
+  final String? featureSetVersion;
+  final String? experimentId;
+  final String? experimentTreatment;
+  final String? recommendationGeneration;
+
+  const RecommendationDeliveredEvent({
+    required this.deliveryId,
+    required this.requestId,
+    required this.impressionId,
+    required this.productId,
+    this.skuId,
+    required this.surface,
+    required this.position,
+    this.candidateSource,
+    this.modelVersion,
+    this.featureSetVersion,
+    this.experimentId,
+    this.experimentTreatment,
+    this.recommendationGeneration,
+  });
+
+  @override
+  String get name => "recommendation_delivered";
+
+  @override
+  String get schema => recommendationDeliveredSchema;
+
+  @override
+  Map<String, Object?> toJson() => {
+        "delivery_id": deliveryId,
+        "request_id": requestId,
+        "impression_id": impressionId,
+        "product_id": productId,
+        "sku_id": skuId,
+        "surface": surface,
+        "position": position,
+        "candidate_source": candidateSource,
+        "model_version": modelVersion,
+        "feature_set_version": featureSetVersion,
+        "experiment_id": experimentId,
+        "experiment_treatment": experimentTreatment,
+        "recommendation_generation": recommendationGeneration,
+      };
+}
+
+class ProductImpressedEvent implements OpenEventFlowGeneratedEvent {
+  static const String productImpressedSchema = "iglu:io.openeventflow/product_impressed/jsonschema/1-0-0";
+
+  final String requestId;
+  final String impressionId;
+  final String deliveryId;
+  final String productId;
+  final String? skuId;
+  final String surface;
+  final int position;
+  final double visibleRatio;
+  final int durationMs;
+  final String? candidateSource;
+  final String? modelVersion;
+  final String? featureSetVersion;
+  final String? experimentId;
+  final String? experimentTreatment;
+  final String? recommendationGeneration;
+
+  const ProductImpressedEvent({
+    required this.requestId,
+    required this.impressionId,
+    required this.deliveryId,
+    required this.productId,
+    this.skuId,
+    required this.surface,
+    required this.position,
+    required this.visibleRatio,
+    required this.durationMs,
+    this.candidateSource,
+    this.modelVersion,
+    this.featureSetVersion,
+    this.experimentId,
+    this.experimentTreatment,
+    this.recommendationGeneration,
+  });
+
+  @override
+  String get name => "product_impressed";
+
+  @override
+  String get schema => productImpressedSchema;
+
+  @override
+  Map<String, Object?> toJson() => {
+        "request_id": requestId,
+        "impression_id": impressionId,
+        "delivery_id": deliveryId,
+        "product_id": productId,
+        "sku_id": skuId,
+        "surface": surface,
+        "position": position,
+        "visible_ratio": visibleRatio,
+        "duration_ms": durationMs,
+        "candidate_source": candidateSource,
+        "model_version": modelVersion,
+        "feature_set_version": featureSetVersion,
+        "experiment_id": experimentId,
+        "experiment_treatment": experimentTreatment,
+        "recommendation_generation": recommendationGeneration,
+      };
+}
+
 class ProductExposedEvent implements OpenEventFlowGeneratedEvent {
   static const String productExposedSchema = "iglu:io.openeventflow/product_exposed/jsonschema/1-0-0";
 
@@ -16,6 +136,17 @@ class ProductExposedEvent implements OpenEventFlowGeneratedEvent {
   final double? visibleRatio;
   final int? durationMs;
   final String? recommendTraceId;
+  final String? requestId;
+  final String? impressionId;
+  final String? deliveryId;
+  final String? skuId;
+  final String? surface;
+  final String? candidateSource;
+  final String? modelVersion;
+  final String? featureSetVersion;
+  final String? experimentId;
+  final String? experimentTreatment;
+  final String? recommendationGeneration;
 
   const ProductExposedEvent({
     required this.productId,
@@ -25,6 +156,17 @@ class ProductExposedEvent implements OpenEventFlowGeneratedEvent {
     this.visibleRatio,
     this.durationMs,
     this.recommendTraceId,
+    this.requestId,
+    this.impressionId,
+    this.deliveryId,
+    this.skuId,
+    this.surface,
+    this.candidateSource,
+    this.modelVersion,
+    this.featureSetVersion,
+    this.experimentId,
+    this.experimentTreatment,
+    this.recommendationGeneration,
   });
 
   @override
@@ -42,6 +184,17 @@ class ProductExposedEvent implements OpenEventFlowGeneratedEvent {
         "visible_ratio": visibleRatio,
         "duration_ms": durationMs,
         "recommend_trace_id": recommendTraceId,
+        "request_id": requestId,
+        "impression_id": impressionId,
+        "delivery_id": deliveryId,
+        "sku_id": skuId,
+        "surface": surface,
+        "candidate_source": candidateSource,
+        "model_version": modelVersion,
+        "feature_set_version": featureSetVersion,
+        "experiment_id": experimentId,
+        "experiment_treatment": experimentTreatment,
+        "recommendation_generation": recommendationGeneration,
       };
 }
 
@@ -53,6 +206,18 @@ class AddToCartEvent implements OpenEventFlowGeneratedEvent {
   final int quantity;
   final double? price;
   final String? currency;
+  final String? cartId;
+  final String? requestId;
+  final String? impressionId;
+  final String? deliveryId;
+  final String? surface;
+  final int? position;
+  final String? candidateSource;
+  final String? modelVersion;
+  final String? featureSetVersion;
+  final String? experimentId;
+  final String? experimentTreatment;
+  final String? recommendationGeneration;
 
   const AddToCartEvent({
     required this.productId,
@@ -60,6 +225,18 @@ class AddToCartEvent implements OpenEventFlowGeneratedEvent {
     required this.quantity,
     this.price,
     this.currency,
+    this.cartId,
+    this.requestId,
+    this.impressionId,
+    this.deliveryId,
+    this.surface,
+    this.position,
+    this.candidateSource,
+    this.modelVersion,
+    this.featureSetVersion,
+    this.experimentId,
+    this.experimentTreatment,
+    this.recommendationGeneration,
   });
 
   @override
@@ -75,6 +252,18 @@ class AddToCartEvent implements OpenEventFlowGeneratedEvent {
         "quantity": quantity,
         "price": price,
         "currency": currency,
+        "cart_id": cartId,
+        "request_id": requestId,
+        "impression_id": impressionId,
+        "delivery_id": deliveryId,
+        "surface": surface,
+        "position": position,
+        "candidate_source": candidateSource,
+        "model_version": modelVersion,
+        "feature_set_version": featureSetVersion,
+        "experiment_id": experimentId,
+        "experiment_treatment": experimentTreatment,
+        "recommendation_generation": recommendationGeneration,
       };
 }
 
@@ -86,6 +275,17 @@ class ProductClickedEvent implements OpenEventFlowGeneratedEvent {
   final int position;
   final String clickId;
   final String? recommendTraceId;
+  final String? requestId;
+  final String? impressionId;
+  final String? deliveryId;
+  final String? skuId;
+  final String? surface;
+  final String? candidateSource;
+  final String? modelVersion;
+  final String? featureSetVersion;
+  final String? experimentId;
+  final String? experimentTreatment;
+  final String? recommendationGeneration;
 
   const ProductClickedEvent({
     required this.productId,
@@ -93,6 +293,17 @@ class ProductClickedEvent implements OpenEventFlowGeneratedEvent {
     required this.position,
     required this.clickId,
     this.recommendTraceId,
+    this.requestId,
+    this.impressionId,
+    this.deliveryId,
+    this.skuId,
+    this.surface,
+    this.candidateSource,
+    this.modelVersion,
+    this.featureSetVersion,
+    this.experimentId,
+    this.experimentTreatment,
+    this.recommendationGeneration,
   });
 
   @override
@@ -108,6 +319,278 @@ class ProductClickedEvent implements OpenEventFlowGeneratedEvent {
         "position": position,
         "click_id": clickId,
         "recommend_trace_id": recommendTraceId,
+        "request_id": requestId,
+        "impression_id": impressionId,
+        "delivery_id": deliveryId,
+        "sku_id": skuId,
+        "surface": surface,
+        "candidate_source": candidateSource,
+        "model_version": modelVersion,
+        "feature_set_version": featureSetVersion,
+        "experiment_id": experimentId,
+        "experiment_treatment": experimentTreatment,
+        "recommendation_generation": recommendationGeneration,
+      };
+}
+
+class FavoriteAddedEvent implements OpenEventFlowGeneratedEvent {
+  static const String favoriteAddedSchema = "iglu:io.openeventflow/favorite_added/jsonschema/1-0-0";
+
+  final String favoriteId;
+  final String productId;
+  final String? skuId;
+  final String? requestId;
+  final String? impressionId;
+  final String? deliveryId;
+  final String? surface;
+  final int? position;
+  final String? candidateSource;
+  final String? modelVersion;
+  final String? featureSetVersion;
+  final String? experimentId;
+  final String? experimentTreatment;
+  final String? recommendationGeneration;
+
+  const FavoriteAddedEvent({
+    required this.favoriteId,
+    required this.productId,
+    this.skuId,
+    this.requestId,
+    this.impressionId,
+    this.deliveryId,
+    this.surface,
+    this.position,
+    this.candidateSource,
+    this.modelVersion,
+    this.featureSetVersion,
+    this.experimentId,
+    this.experimentTreatment,
+    this.recommendationGeneration,
+  });
+
+  @override
+  String get name => "favorite_added";
+
+  @override
+  String get schema => favoriteAddedSchema;
+
+  @override
+  Map<String, Object?> toJson() => {
+        "favorite_id": favoriteId,
+        "product_id": productId,
+        "sku_id": skuId,
+        "request_id": requestId,
+        "impression_id": impressionId,
+        "delivery_id": deliveryId,
+        "surface": surface,
+        "position": position,
+        "candidate_source": candidateSource,
+        "model_version": modelVersion,
+        "feature_set_version": featureSetVersion,
+        "experiment_id": experimentId,
+        "experiment_treatment": experimentTreatment,
+        "recommendation_generation": recommendationGeneration,
+      };
+}
+
+class OrderCreatedEvent implements OpenEventFlowGeneratedEvent {
+  static const String orderCreatedSchema = "iglu:io.openeventflow/order_created/jsonschema/1-0-0";
+
+  final String orderId;
+  final String orderLineId;
+  final String productId;
+  final String skuId;
+  final int quantity;
+  final double unitPrice;
+  final String currency;
+  final String? requestId;
+  final String? impressionId;
+  final String? deliveryId;
+
+  const OrderCreatedEvent({
+    required this.orderId,
+    required this.orderLineId,
+    required this.productId,
+    required this.skuId,
+    required this.quantity,
+    required this.unitPrice,
+    required this.currency,
+    this.requestId,
+    this.impressionId,
+    this.deliveryId,
+  });
+
+  @override
+  String get name => "order_created";
+
+  @override
+  String get schema => orderCreatedSchema;
+
+  @override
+  Map<String, Object?> toJson() => {
+        "order_id": orderId,
+        "order_line_id": orderLineId,
+        "product_id": productId,
+        "sku_id": skuId,
+        "quantity": quantity,
+        "unit_price": unitPrice,
+        "currency": currency,
+        "request_id": requestId,
+        "impression_id": impressionId,
+        "delivery_id": deliveryId,
+      };
+}
+
+class OrderPaidEvent implements OpenEventFlowGeneratedEvent {
+  static const String orderPaidSchema = "iglu:io.openeventflow/order_paid/jsonschema/1-0-0";
+
+  final String paymentId;
+  final String orderId;
+  final String orderLineId;
+  final String productId;
+  final String skuId;
+  final int quantity;
+  final double paidAmount;
+  final String currency;
+  final String? requestId;
+  final String? impressionId;
+  final String? deliveryId;
+
+  const OrderPaidEvent({
+    required this.paymentId,
+    required this.orderId,
+    required this.orderLineId,
+    required this.productId,
+    required this.skuId,
+    required this.quantity,
+    required this.paidAmount,
+    required this.currency,
+    this.requestId,
+    this.impressionId,
+    this.deliveryId,
+  });
+
+  @override
+  String get name => "order_paid";
+
+  @override
+  String get schema => orderPaidSchema;
+
+  @override
+  Map<String, Object?> toJson() => {
+        "payment_id": paymentId,
+        "order_id": orderId,
+        "order_line_id": orderLineId,
+        "product_id": productId,
+        "sku_id": skuId,
+        "quantity": quantity,
+        "paid_amount": paidAmount,
+        "currency": currency,
+        "request_id": requestId,
+        "impression_id": impressionId,
+        "delivery_id": deliveryId,
+      };
+}
+
+class OrderCancelledEvent implements OpenEventFlowGeneratedEvent {
+  static const String orderCancelledSchema = "iglu:io.openeventflow/order_cancelled/jsonschema/1-0-0";
+
+  final String cancellationId;
+  final String orderId;
+  final String orderLineId;
+  final String productId;
+  final String skuId;
+  final int quantity;
+  final String? reason;
+  final String? requestId;
+  final String? impressionId;
+  final String? deliveryId;
+
+  const OrderCancelledEvent({
+    required this.cancellationId,
+    required this.orderId,
+    required this.orderLineId,
+    required this.productId,
+    required this.skuId,
+    required this.quantity,
+    this.reason,
+    this.requestId,
+    this.impressionId,
+    this.deliveryId,
+  });
+
+  @override
+  String get name => "order_cancelled";
+
+  @override
+  String get schema => orderCancelledSchema;
+
+  @override
+  Map<String, Object?> toJson() => {
+        "cancellation_id": cancellationId,
+        "order_id": orderId,
+        "order_line_id": orderLineId,
+        "product_id": productId,
+        "sku_id": skuId,
+        "quantity": quantity,
+        "reason": reason,
+        "request_id": requestId,
+        "impression_id": impressionId,
+        "delivery_id": deliveryId,
+      };
+}
+
+class OrderRefundedEvent implements OpenEventFlowGeneratedEvent {
+  static const String orderRefundedSchema = "iglu:io.openeventflow/order_refunded/jsonschema/1-0-0";
+
+  final String refundId;
+  final String orderId;
+  final String orderLineId;
+  final String productId;
+  final String skuId;
+  final int quantity;
+  final double refundAmount;
+  final String currency;
+  final String? reason;
+  final String? requestId;
+  final String? impressionId;
+  final String? deliveryId;
+
+  const OrderRefundedEvent({
+    required this.refundId,
+    required this.orderId,
+    required this.orderLineId,
+    required this.productId,
+    required this.skuId,
+    required this.quantity,
+    required this.refundAmount,
+    required this.currency,
+    this.reason,
+    this.requestId,
+    this.impressionId,
+    this.deliveryId,
+  });
+
+  @override
+  String get name => "order_refunded";
+
+  @override
+  String get schema => orderRefundedSchema;
+
+  @override
+  Map<String, Object?> toJson() => {
+        "refund_id": refundId,
+        "order_id": orderId,
+        "order_line_id": orderLineId,
+        "product_id": productId,
+        "sku_id": skuId,
+        "quantity": quantity,
+        "refund_amount": refundAmount,
+        "currency": currency,
+        "reason": reason,
+        "request_id": requestId,
+        "impression_id": impressionId,
+        "delivery_id": deliveryId,
       };
 }
 

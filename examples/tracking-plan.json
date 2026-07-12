@@ -3,6 +3,52 @@
   "schemaVendor": "io.openeventflow",
   "events": [
     {
+      "name": "recommendation_delivered",
+      "version": "1-0-0",
+      "owner": "recommendation",
+      "description": "The recommendation service delivered a ranked product to a client.",
+      "required": ["delivery_id", "request_id", "impression_id", "product_id", "surface", "position"],
+      "properties": {
+        "delivery_id": { "type": "string", "description": "Unique server-generated delivery identifier." },
+        "request_id": { "type": "string", "description": "Recommendation request identifier." },
+        "impression_id": { "type": "string", "description": "Stable attribution identifier for this recommendation item." },
+        "product_id": { "type": "string", "description": "Stable product identifier." },
+        "sku_id": { "type": "string", "description": "Stable SKU identifier when ranking occurs at SKU level." },
+        "surface": { "type": "string", "description": "Recommendation surface." },
+        "position": { "type": "integer", "description": "Zero-based ranked position." },
+        "candidate_source": { "type": "string", "description": "Candidate generator responsible for the item." },
+        "model_version": { "type": "string", "description": "Online ranking model version." },
+        "feature_set_version": { "type": "string", "description": "Online feature-set version." },
+        "experiment_id": { "type": "string", "description": "Experiment identifier." },
+        "experiment_treatment": { "type": "string", "description": "Assigned experiment treatment." },
+        "recommendation_generation": { "type": "string", "description": "Generation identifier used to distinguish refreshes." }
+      }
+    },
+    {
+      "name": "product_impressed",
+      "version": "1-0-0",
+      "owner": "recommendation",
+      "description": "A delivered product satisfied the client visibility threshold and became a true impression.",
+      "required": ["request_id", "impression_id", "delivery_id", "product_id", "surface", "position", "visible_ratio", "duration_ms"],
+      "properties": {
+        "request_id": { "type": "string", "description": "Recommendation request identifier." },
+        "impression_id": { "type": "string", "description": "Idempotency and attribution identifier." },
+        "delivery_id": { "type": "string", "description": "Related server delivery identifier." },
+        "product_id": { "type": "string", "description": "Stable product identifier." },
+        "sku_id": { "type": "string", "description": "Stable SKU identifier." },
+        "surface": { "type": "string", "description": "Recommendation surface." },
+        "position": { "type": "integer", "description": "Zero-based ranked position." },
+        "visible_ratio": { "type": "number", "description": "Visible area ratio from 0 to 1." },
+        "duration_ms": { "type": "integer", "description": "Continuous visible duration in milliseconds." },
+        "candidate_source": { "type": "string", "description": "Candidate generator responsible for the item." },
+        "model_version": { "type": "string", "description": "Online ranking model version." },
+        "feature_set_version": { "type": "string", "description": "Online feature-set version." },
+        "experiment_id": { "type": "string", "description": "Experiment identifier." },
+        "experiment_treatment": { "type": "string", "description": "Assigned experiment treatment." },
+        "recommendation_generation": { "type": "string", "description": "Generation identifier used to distinguish refreshes." }
+      }
+    },
+    {
       "name": "product_exposed",
       "version": "1-0-0",
       "owner": "recommendation",
@@ -41,7 +87,18 @@
         "recommend_trace_id": {
           "type": "string",
           "description": "Recommendation request trace id."
-        }
+        },
+        "request_id": { "type": "string", "description": "Recommendation request identifier." },
+        "impression_id": { "type": "string", "description": "Stable attribution identifier." },
+        "delivery_id": { "type": "string", "description": "Related server delivery identifier." },
+        "sku_id": { "type": "string", "description": "Stable SKU identifier." },
+        "surface": { "type": "string", "description": "Recommendation surface." },
+        "candidate_source": { "type": "string", "description": "Candidate generator." },
+        "model_version": { "type": "string", "description": "Online model version." },
+        "feature_set_version": { "type": "string", "description": "Online feature-set version." },
+        "experiment_id": { "type": "string", "description": "Experiment identifier." },
+        "experiment_treatment": { "type": "string", "description": "Experiment treatment." },
+        "recommendation_generation": { "type": "string", "description": "Refresh generation identifier." }
       }
     },
     {
@@ -74,7 +131,19 @@
         "currency": {
           "type": "string",
           "description": "ISO currency code."
-        }
+        },
+        "cart_id": { "type": "string", "description": "Idempotency identifier for the cart action." },
+        "request_id": { "type": "string", "description": "Recommendation request identifier." },
+        "impression_id": { "type": "string", "description": "Stable attribution identifier." },
+        "delivery_id": { "type": "string", "description": "Related server delivery identifier." },
+        "surface": { "type": "string", "description": "Recommendation surface." },
+        "position": { "type": "integer", "description": "Zero-based ranked position." },
+        "candidate_source": { "type": "string", "description": "Candidate generator." },
+        "model_version": { "type": "string", "description": "Online model version." },
+        "feature_set_version": { "type": "string", "description": "Online feature-set version." },
+        "experiment_id": { "type": "string", "description": "Experiment identifier." },
+        "experiment_treatment": { "type": "string", "description": "Experiment treatment." },
+        "recommendation_generation": { "type": "string", "description": "Refresh generation identifier." }
       }
     },
     {
@@ -108,7 +177,120 @@
         "recommend_trace_id": {
           "type": "string",
           "description": "Recommendation request trace id."
-        }
+        },
+        "request_id": { "type": "string", "description": "Recommendation request identifier." },
+        "impression_id": { "type": "string", "description": "Stable attribution identifier." },
+        "delivery_id": { "type": "string", "description": "Related server delivery identifier." },
+        "sku_id": { "type": "string", "description": "Stable SKU identifier." },
+        "surface": { "type": "string", "description": "Recommendation surface." },
+        "candidate_source": { "type": "string", "description": "Candidate generator." },
+        "model_version": { "type": "string", "description": "Online model version." },
+        "feature_set_version": { "type": "string", "description": "Online feature-set version." },
+        "experiment_id": { "type": "string", "description": "Experiment identifier." },
+        "experiment_treatment": { "type": "string", "description": "Experiment treatment." },
+        "recommendation_generation": { "type": "string", "description": "Refresh generation identifier." }
+      }
+    },
+    {
+      "name": "favorite_added",
+      "version": "1-0-0",
+      "owner": "commerce",
+      "description": "A user added a recommended product to favorites.",
+      "required": ["favorite_id", "product_id"],
+      "properties": {
+        "favorite_id": { "type": "string", "description": "Idempotency identifier for the favorite action." },
+        "product_id": { "type": "string", "description": "Stable product identifier." },
+        "sku_id": { "type": "string", "description": "Stable SKU identifier." },
+        "request_id": { "type": "string", "description": "Recommendation request identifier." },
+        "impression_id": { "type": "string", "description": "Stable attribution identifier." },
+        "delivery_id": { "type": "string", "description": "Related server delivery identifier." },
+        "surface": { "type": "string", "description": "Recommendation surface." },
+        "position": { "type": "integer", "description": "Zero-based ranked position." },
+        "candidate_source": { "type": "string", "description": "Candidate generator." },
+        "model_version": { "type": "string", "description": "Online model version." },
+        "feature_set_version": { "type": "string", "description": "Online feature-set version." },
+        "experiment_id": { "type": "string", "description": "Experiment identifier." },
+        "experiment_treatment": { "type": "string", "description": "Experiment treatment." },
+        "recommendation_generation": { "type": "string", "description": "Refresh generation identifier." }
+      }
+    },
+    {
+      "name": "order_created",
+      "version": "1-0-0",
+      "owner": "commerce",
+      "description": "The authoritative order service created an order line.",
+      "required": ["order_id", "order_line_id", "product_id", "sku_id", "quantity", "unit_price", "currency"],
+      "properties": {
+        "order_id": { "type": "string", "description": "Authoritative order identifier." },
+        "order_line_id": { "type": "string", "description": "Authoritative order-line identifier." },
+        "product_id": { "type": "string", "description": "Stable product identifier." },
+        "sku_id": { "type": "string", "description": "Stable SKU identifier." },
+        "quantity": { "type": "integer", "description": "Ordered quantity." },
+        "unit_price": { "type": "number", "description": "Authoritative unit price." },
+        "currency": { "type": "string", "description": "ISO currency code." },
+        "request_id": { "type": "string", "description": "Attributed recommendation request." },
+        "impression_id": { "type": "string", "description": "Attributed recommendation impression." },
+        "delivery_id": { "type": "string", "description": "Attributed delivery identifier." }
+      }
+    },
+    {
+      "name": "order_paid",
+      "version": "1-0-0",
+      "owner": "commerce",
+      "description": "The authoritative payment service confirmed payment for an order line.",
+      "required": ["payment_id", "order_id", "order_line_id", "product_id", "sku_id", "quantity", "paid_amount", "currency"],
+      "properties": {
+        "payment_id": { "type": "string", "description": "Authoritative payment identifier." },
+        "order_id": { "type": "string", "description": "Authoritative order identifier." },
+        "order_line_id": { "type": "string", "description": "Authoritative order-line identifier." },
+        "product_id": { "type": "string", "description": "Stable product identifier." },
+        "sku_id": { "type": "string", "description": "Stable SKU identifier." },
+        "quantity": { "type": "integer", "description": "Paid quantity." },
+        "paid_amount": { "type": "number", "description": "Authoritative paid amount for this line." },
+        "currency": { "type": "string", "description": "ISO currency code." },
+        "request_id": { "type": "string", "description": "Attributed recommendation request." },
+        "impression_id": { "type": "string", "description": "Attributed recommendation impression." },
+        "delivery_id": { "type": "string", "description": "Attributed delivery identifier." }
+      }
+    },
+    {
+      "name": "order_cancelled",
+      "version": "1-0-0",
+      "owner": "commerce",
+      "description": "The authoritative order service cancelled an order line.",
+      "required": ["cancellation_id", "order_id", "order_line_id", "product_id", "sku_id", "quantity"],
+      "properties": {
+        "cancellation_id": { "type": "string", "description": "Idempotency identifier for cancellation." },
+        "order_id": { "type": "string", "description": "Authoritative order identifier." },
+        "order_line_id": { "type": "string", "description": "Authoritative order-line identifier." },
+        "product_id": { "type": "string", "description": "Stable product identifier." },
+        "sku_id": { "type": "string", "description": "Stable SKU identifier." },
+        "quantity": { "type": "integer", "description": "Cancelled quantity." },
+        "reason": { "type": "string", "description": "Cancellation reason code." },
+        "request_id": { "type": "string", "description": "Attributed recommendation request." },
+        "impression_id": { "type": "string", "description": "Attributed recommendation impression." },
+        "delivery_id": { "type": "string", "description": "Attributed delivery identifier." }
+      }
+    },
+    {
+      "name": "order_refunded",
+      "version": "1-0-0",
+      "owner": "commerce",
+      "description": "The authoritative payment service refunded an order line.",
+      "required": ["refund_id", "order_id", "order_line_id", "product_id", "sku_id", "quantity", "refund_amount", "currency"],
+      "properties": {
+        "refund_id": { "type": "string", "description": "Authoritative refund identifier." },
+        "order_id": { "type": "string", "description": "Authoritative order identifier." },
+        "order_line_id": { "type": "string", "description": "Authoritative order-line identifier." },
+        "product_id": { "type": "string", "description": "Stable product identifier." },
+        "sku_id": { "type": "string", "description": "Stable SKU identifier." },
+        "quantity": { "type": "integer", "description": "Refunded quantity." },
+        "refund_amount": { "type": "number", "description": "Authoritative refunded amount." },
+        "currency": { "type": "string", "description": "ISO currency code." },
+        "reason": { "type": "string", "description": "Refund reason code." },
+        "request_id": { "type": "string", "description": "Attributed recommendation request." },
+        "impression_id": { "type": "string", "description": "Attributed recommendation impression." },
+        "delivery_id": { "type": "string", "description": "Attributed delivery identifier." }
       }
     },
     {

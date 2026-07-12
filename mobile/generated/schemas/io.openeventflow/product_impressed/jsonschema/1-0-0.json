@@ -1,0 +1,84 @@
+{
+  "$schema": "http://iglucentral.com/schemas/com.snowplowanalytics.self-desc/schema/jsonschema/1-0-0#",
+  "self": {
+    "vendor": "io.openeventflow",
+    "name": "product_impressed",
+    "format": "jsonschema",
+    "version": "1-0-0"
+  },
+  "type": "object",
+  "description": "A delivered product satisfied the client visibility threshold and became a true impression.",
+  "additionalProperties": false,
+  "properties": {
+    "request_id": {
+      "type": "string",
+      "description": "Recommendation request identifier."
+    },
+    "impression_id": {
+      "type": "string",
+      "description": "Idempotency and attribution identifier."
+    },
+    "delivery_id": {
+      "type": "string",
+      "description": "Related server delivery identifier."
+    },
+    "product_id": {
+      "type": "string",
+      "description": "Stable product identifier."
+    },
+    "sku_id": {
+      "type": "string",
+      "description": "Stable SKU identifier."
+    },
+    "surface": {
+      "type": "string",
+      "description": "Recommendation surface."
+    },
+    "position": {
+      "type": "integer",
+      "description": "Zero-based ranked position."
+    },
+    "visible_ratio": {
+      "type": "number",
+      "description": "Visible area ratio from 0 to 1."
+    },
+    "duration_ms": {
+      "type": "integer",
+      "description": "Continuous visible duration in milliseconds."
+    },
+    "candidate_source": {
+      "type": "string",
+      "description": "Candidate generator responsible for the item."
+    },
+    "model_version": {
+      "type": "string",
+      "description": "Online ranking model version."
+    },
+    "feature_set_version": {
+      "type": "string",
+      "description": "Online feature-set version."
+    },
+    "experiment_id": {
+      "type": "string",
+      "description": "Experiment identifier."
+    },
+    "experiment_treatment": {
+      "type": "string",
+      "description": "Assigned experiment treatment."
+    },
+    "recommendation_generation": {
+      "type": "string",
+      "description": "Generation identifier used to distinguish refreshes."
+    }
+  },
+  "required": [
+    "request_id",
+    "impression_id",
+    "delivery_id",
+    "product_id",
+    "surface",
+    "position",
+    "visible_ratio",
+    "duration_ms"
+  ]
+}

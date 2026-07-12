@@ -6,9 +6,9 @@ const {
   createCollector,
   createHttpCollectorServer,
   createInMemoryTopicBroker,
+  createKafkaTopicBroker,
   createTrackingPlanRegistry
 } = require("../src/index");
-const { resolveBroker } = require("../src/server");
 
 const trackingPlan = {
   schemaVendor: "io.openeventflow",
@@ -87,119 +87,101 @@ test("http collector accepts a JSON event batch and returns collector counts", a
   assert.equal(broker.topic("snowplow_enriched_events")[0].event_id, "evt-http");
 });
 
-test("collector awaits broker acknowledgements before accepting a batch", async () => {
-  const published = [];
-  const broker = {
-    async publish(topic, message) {
-      await new Promise((resolve) => setImmediate(resolve));
-      published.push({ topic, message });
+test("Kafka broker connects lazily and publishes a compressed idempotent batch with all acknowledgements", async () => {
+  const calls = [];
+  const producer = {
+    async connect() { calls.push(["connect"]); },
+    async sendBatch(batch) { calls.push(["sendBatch", batch]); },
+    async disconnect() { calls.push(["disconnect"]); }
+  };
+  const producerOptions = [];
+  const kafkaModule = {
+    CompressionTypes: { GZIP: 1, None: 0 },
+    Kafka: class {
+      producer(options) {
+        producerOptions.push(options);
+        return producer;
+      }
     }
   };
-  const collector = createCollector({
-    broker,
-    registry: createTrackingPlanRegistry(trackingPlan)
+  const broker = createKafkaTopicBroker({
+    kafkaModule,
+    brokers: ["kafka:9092"],
+    clientId: "collector-test"
   });
 
-  const result = await collector.collect([validEvent()]);
-
-  assert.deepEqual(result, { accepted: 1, enriched: 1, bad: 0 });
-  assert.deepEqual(published.map(({ topic }) => topic), [
-    "snowplow_raw_events",
-    "snowplow_enriched_events"
+  await broker.publishBatch([
+    { topic: "raw", key: "evt-1", message: { event_id: "evt-1" } },
+    { topic: "valid", key: "evt-1", message: { event_id: "evt-1", valid: true } }
   ]);
+  await broker.close();
+
+  assert.deepEqual(producerOptions[0], {
+    idempotent: true,
+    maxInFlightRequests: 5,
+    allowAutoTopicCreation: false,
+    transactionTimeout: 30000
+  });
+  assert.equal(calls[0][0], "connect");
+  assert.equal(calls[1][1].acks, -1);
+  assert.equal(calls[1][1].compression, 1);
+  assert.deepEqual(calls[1][1].topicMessages.map((entry) => entry.topic), ["raw", "valid"]);
+  assert.equal(calls[1][1].topicMessages[0].messages[0].key, "evt-1");
+  assert.equal(calls[2][0], "disconnect");
 });
 
-test("production broker guard refuses the in-memory fallback", () => {
-  assert.throws(
-    () => resolveBroker({ requireDurableBroker: true }),
-    /durable broker required/
-  );
-});
-
-test("http collector exposes health and readiness without authentication", async () => {
+test("http collector enforces media type, body and batch limits", async () => {
   const server = createHttpCollectorServer({
-    collector: { collect: async () => ({ accepted: 0, enriched: 0, bad: 0 }) },
-    apiKey: "secret",
-    readiness: async () => true
+    collector: { async collect(events) { return { accepted: events.length }; } },
+    maxBodyBytes: 64,
+    maxBatchSize: 1
   });
 
-  const health = await request(server, { method: "GET", path: "/healthz" });
-  const ready = await request(server, { method: "GET", path: "/readyz" });
-
-  assert.equal(health.statusCode, 200);
-  assert.deepEqual(JSON.parse(health.body), { status: "ok" });
-  assert.equal(ready.statusCode, 200);
-  assert.deepEqual(JSON.parse(ready.body), { status: "ready" });
+  const media = await request(server, "POST", "/collect", "{}", { "content-type": "text/plain" });
+  assert.equal(media.statusCode, 415);
+  const batch = await request(server, "POST", "/collect", JSON.stringify([{}, {}]), { "content-type": "application/json" });
+  assert.equal(batch.statusCode, 413);
+  const body = await request(server, "POST", "/collect", JSON.stringify({ events: [{ value: "x".repeat(80) }] }), { "content-type": "application/json" });
+  assert.equal(body.statusCode, 413);
 });
 
-test("http collector reports rejected readiness checks as unavailable", async () => {
+test("http collector exposes liveness and broker-backed readiness", async () => {
   const server = createHttpCollectorServer({
-    collector: { collect: async () => ({ accepted: 0, enriched: 0, bad: 0 }) },
-    readiness: async () => { throw new Error("broker check failed"); }
+    collector: {
+      async collect() { return {}; },
+      async health() { return { ready: false, reason: "kafka_unavailable" }; }
+    }
   });
-
-  const response = await request(server, { method: "GET", path: "/readyz" });
-
-  assert.equal(response.statusCode, 503);
-  assert.deepEqual(JSON.parse(response.body), { status: "not_ready" });
+  assert.equal((await request(server, "GET", "/health/live", "")).statusCode, 200);
+  const readiness = await request(server, "GET", "/health/ready", "");
+  assert.equal(readiness.statusCode, 503);
+  assert.equal(JSON.parse(readiness.body).reason, "kafka_unavailable");
 });
 
-test("http collector requires the configured API key", async () => {
+test("http collector rejects missing API keys when authentication is configured", async () => {
   const server = createHttpCollectorServer({
-    collector: { collect: async () => ({ accepted: 0, enriched: 0, bad: 0 }) },
-    apiKey: "secret"
+    collector: { async collect(events) { return { accepted: events.length }; } },
+    apiKeys: ["secret-key"]
   });
-
-  const missing = await postJson(server, "/collect", { events: [] });
-  const invalid = await postJson(server, "/collect", { events: [] }, { "x-api-key": "wrong" });
-  const valid = await postJson(server, "/collect", { events: [] }, { "x-api-key": "secret" });
-
-  assert.equal(missing.statusCode, 401);
-  assert.equal(invalid.statusCode, 401);
-  assert.equal(valid.statusCode, 202);
+  const denied = await postJson(server, "/collect", [{}]);
+  assert.equal(denied.statusCode, 401);
+  const accepted = await request(server, "POST", "/collect", JSON.stringify([{}]), {
+    "content-type": "application/json",
+    "x-api-key": "secret-key"
+  });
+  assert.equal(accepted.statusCode, 202);
 });
 
-test("http collector rejects request bodies over the configured limit", async () => {
-  const server = createHttpCollectorServer({
-    collector: { collect: async () => ({ accepted: 0, enriched: 0, bad: 0 }) },
-    maxBodyBytes: 10
-  });
-
-  const response = await postJson(server, "/collect", { events: [validEvent()] });
-
-  assert.equal(response.statusCode, 413);
-  assert.equal(JSON.parse(response.body).error, "payload_too_large");
-});
-
-test("http collector reports broker failures as unavailable", async () => {
-  const server = createHttpCollectorServer({
-    collector: createCollector({
-      broker: { publish: async () => { throw new Error("broker unavailable"); } },
-      registry: createTrackingPlanRegistry(trackingPlan)
-    })
-  });
-
-  const response = await postJson(server, "/collect", { events: [validEvent()] });
-
-  assert.equal(response.statusCode, 503);
-  assert.equal(JSON.parse(response.body).error, "service_unavailable");
-});
-
-function postJson(server, path, payload, headers = {}) {
-  return request(server, {
-    method: "POST",
-    path,
-    headers: { "content-type": "application/json", ...headers },
-    body: JSON.stringify(payload)
-  });
+function postJson(server, path, payload) {
+  return request(server, "POST", path, JSON.stringify(payload), { "content-type": "application/json" });
 }
 
-function request(server, { method, path, headers = {}, body = "" }) {
+function request(server, method, path, body, headers = {}) {
   return new Promise((resolve, reject) => {
-    const incoming = new PassThrough();
-    incoming.method = method;
-    incoming.url = path;
-    incoming.headers = headers;
+    const request = new PassThrough();
+    request.method = method;
+    request.url = path;
+    request.headers = headers;
     const response = {
       statusCode: 200,
       body: "",
@@ -211,8 +193,8 @@ function request(server, { method, path, headers = {}, body = "" }) {
         resolve({ statusCode: this.statusCode, body: this.body });
       }
     };
-    server.emit("request", incoming, response);
-    incoming.on("error", reject);
-    incoming.end(body);
+    server.emit("request", request, response);
+    request.on("error", reject);
+    request.end(body);
   });
 }

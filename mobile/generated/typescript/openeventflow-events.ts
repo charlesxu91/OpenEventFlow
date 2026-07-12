@@ -6,6 +6,42 @@ export interface OpenEventFlowEventEnvelope<TProperties extends Record<string, u
   properties: TProperties;
 }
 
+export const RECOMMENDATION_DELIVERED_SCHEMA = "iglu:io.openeventflow/recommendation_delivered/jsonschema/1-0-0";
+export interface RecommendationDeliveredEvent {
+  deliveryId: string;
+  requestId: string;
+  impressionId: string;
+  productId: string;
+  skuId?: string;
+  surface: string;
+  position: number;
+  candidateSource?: string;
+  modelVersion?: string;
+  featureSetVersion?: string;
+  experimentId?: string;
+  experimentTreatment?: string;
+  recommendationGeneration?: string;
+}
+
+export const PRODUCT_IMPRESSED_SCHEMA = "iglu:io.openeventflow/product_impressed/jsonschema/1-0-0";
+export interface ProductImpressedEvent {
+  requestId: string;
+  impressionId: string;
+  deliveryId: string;
+  productId: string;
+  skuId?: string;
+  surface: string;
+  position: number;
+  visibleRatio: number;
+  durationMs: number;
+  candidateSource?: string;
+  modelVersion?: string;
+  featureSetVersion?: string;
+  experimentId?: string;
+  experimentTreatment?: string;
+  recommendationGeneration?: string;
+}
+
 export const PRODUCT_EXPOSED_SCHEMA = "iglu:io.openeventflow/product_exposed/jsonschema/1-0-0";
 export interface ProductExposedEvent {
   productId: string;
@@ -15,6 +51,17 @@ export interface ProductExposedEvent {
   visibleRatio?: number;
   durationMs?: number;
   recommendTraceId?: string;
+  requestId?: string;
+  impressionId?: string;
+  deliveryId?: string;
+  skuId?: string;
+  surface?: string;
+  candidateSource?: string;
+  modelVersion?: string;
+  featureSetVersion?: string;
+  experimentId?: string;
+  experimentTreatment?: string;
+  recommendationGeneration?: string;
 }
 
 export const ADD_TO_CART_SCHEMA = "iglu:io.openeventflow/add_to_cart/jsonschema/1-0-0";
@@ -24,6 +71,18 @@ export interface AddToCartEvent {
   quantity: number;
   price?: number;
   currency?: string;
+  cartId?: string;
+  requestId?: string;
+  impressionId?: string;
+  deliveryId?: string;
+  surface?: string;
+  position?: number;
+  candidateSource?: string;
+  modelVersion?: string;
+  featureSetVersion?: string;
+  experimentId?: string;
+  experimentTreatment?: string;
+  recommendationGeneration?: string;
 }
 
 export const PRODUCT_CLICKED_SCHEMA = "iglu:io.openeventflow/product_clicked/jsonschema/1-0-0";
@@ -33,6 +92,94 @@ export interface ProductClickedEvent {
   position: number;
   clickId: string;
   recommendTraceId?: string;
+  requestId?: string;
+  impressionId?: string;
+  deliveryId?: string;
+  skuId?: string;
+  surface?: string;
+  candidateSource?: string;
+  modelVersion?: string;
+  featureSetVersion?: string;
+  experimentId?: string;
+  experimentTreatment?: string;
+  recommendationGeneration?: string;
+}
+
+export const FAVORITE_ADDED_SCHEMA = "iglu:io.openeventflow/favorite_added/jsonschema/1-0-0";
+export interface FavoriteAddedEvent {
+  favoriteId: string;
+  productId: string;
+  skuId?: string;
+  requestId?: string;
+  impressionId?: string;
+  deliveryId?: string;
+  surface?: string;
+  position?: number;
+  candidateSource?: string;
+  modelVersion?: string;
+  featureSetVersion?: string;
+  experimentId?: string;
+  experimentTreatment?: string;
+  recommendationGeneration?: string;
+}
+
+export const ORDER_CREATED_SCHEMA = "iglu:io.openeventflow/order_created/jsonschema/1-0-0";
+export interface OrderCreatedEvent {
+  orderId: string;
+  orderLineId: string;
+  productId: string;
+  skuId: string;
+  quantity: number;
+  unitPrice: number;
+  currency: string;
+  requestId?: string;
+  impressionId?: string;
+  deliveryId?: string;
+}
+
+export const ORDER_PAID_SCHEMA = "iglu:io.openeventflow/order_paid/jsonschema/1-0-0";
+export interface OrderPaidEvent {
+  paymentId: string;
+  orderId: string;
+  orderLineId: string;
+  productId: string;
+  skuId: string;
+  quantity: number;
+  paidAmount: number;
+  currency: string;
+  requestId?: string;
+  impressionId?: string;
+  deliveryId?: string;
+}
+
+export const ORDER_CANCELLED_SCHEMA = "iglu:io.openeventflow/order_cancelled/jsonschema/1-0-0";
+export interface OrderCancelledEvent {
+  cancellationId: string;
+  orderId: string;
+  orderLineId: string;
+  productId: string;
+  skuId: string;
+  quantity: number;
+  reason?: string;
+  requestId?: string;
+  impressionId?: string;
+  deliveryId?: string;
+}
+
+export const ORDER_REFUNDED_SCHEMA = "iglu:io.openeventflow/order_refunded/jsonschema/1-0-0";
+export interface OrderRefundedEvent {
+  refundId: string;
+  orderId: string;
+  orderLineId: string;
+  productId: string;
+  skuId: string;
+  quantity: number;
+  refundAmount: number;
+  currency: string;
+  reason?: string;
+  requestId?: string;
+  impressionId?: string;
+  deliveryId?: string;
 }
 
 export const PAGE_STAY_SCHEMA = "iglu:io.openeventflow/page_stay/jsonschema/1-0-0";
