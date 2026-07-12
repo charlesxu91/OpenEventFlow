@@ -1,6 +1,7 @@
 package io.openeventflow.recommendation.model;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -27,7 +28,7 @@ public record RecommendationEvent(
     userId = userId == null ? "" : userId;
     modelVersion = modelVersion == null ? "" : modelVersion;
     featureSetVersion = featureSetVersion == null ? "" : featureSetVersion;
-    features = features == null ? Map.of() : Map.copyOf(features);
+    features = features == null ? new HashMap<>() : new HashMap<>(features);
     if (eventTimeMillis < 0 || position < 0 || grossMerchandiseValueMicros < 0) {
       throw new IllegalArgumentException("timestamps, position and GMV must be non-negative");
     }

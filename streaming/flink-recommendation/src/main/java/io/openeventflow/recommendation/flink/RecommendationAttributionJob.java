@@ -16,6 +16,7 @@ import java.util.Objects;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.java.typeutils.runtime.kryo.JavaSerializer;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.connector.base.DeliveryGuarantee;
 import org.apache.flink.connector.kafka.sink.KafkaRecordSerializationSchema;
@@ -36,10 +37,16 @@ public final class RecommendationAttributionJob {
 
   public static void main(String[] args) throws Exception {
     ParameterTool parameters = ParameterTool.fromArgs(args);
-    Duration window = Duration.ofHours(parameters.getLong("window-hours", 168));
-    Duration lateness = Duration.ofMinutes(parameters.getLong("allowed-lateness-minutes", 10));
+    Duration window = durationParameter(parameters, "window-seconds", "window-hours", 168, true);
+    Duration lateness = durationParameter(
+        parameters, "allowed-lateness-seconds", "allowed-lateness-minutes", 10, false);
+    Duration sourceIdleness = Duration.ofSeconds(parameters.getLong("source-idle-seconds", 60));
+    if (sourceIdleness.isZero() || sourceIdleness.isNegative()) {
+      throw new IllegalArgumentException("source-idle-seconds must be positive");
+    }
 
     StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+    configureSerialization(env);
     env.getConfig().setGlobalJobParameters(parameters);
     DataStream<String> input = kafkaMode(parameters)
         ? kafkaInput(env, parameters)
@@ -48,6 +55,7 @@ public final class RecommendationAttributionJob {
         .filter(Objects::nonNull)
         .assignTimestampsAndWatermarks(WatermarkStrategy
             .<RecommendationEvent>forBoundedOutOfOrderness(lateness)
+            .withIdleness(sourceIdleness)
             .withTimestampAssigner((event, ignored) -> event.eventTimeMillis()))
         .keyBy(RecommendationEvent::attributionKey)
         .process(new AttributionProcessFunction(window, lateness));
@@ -57,6 +65,26 @@ public final class RecommendationAttributionJob {
       samples.map(new JsonSampleEncoder()).writeAsText(parameters.getRequired("output"));
     }
     env.execute("OpenEventFlow recommendation attribution");
+  }
+
+  static void configureSerialization(StreamExecutionEnvironment environment) {
+    // Flink 1.19's bundled Kryo FieldSerializer cannot reflectively serialize Java 17 records.
+    // RecommendationEvent implements Serializable, so use Java serialization explicitly for
+    // checkpointed attribution state instead of relying on the incompatible Kryo fallback.
+    environment.getConfig().registerTypeWithKryoSerializer(RecommendationEvent.class, JavaSerializer.class);
+  }
+
+  static Duration durationParameter(
+      ParameterTool parameters, String secondsKey, String legacyKey, long fallback, boolean legacyHours) {
+    Duration value = parameters.has(secondsKey)
+        ? Duration.ofSeconds(parameters.getLong(secondsKey))
+        : (legacyHours
+            ? Duration.ofHours(parameters.getLong(legacyKey, fallback))
+            : Duration.ofMinutes(parameters.getLong(legacyKey, fallback)));
+    if (value.isNegative() || (legacyHours && value.isZero())) {
+      throw new IllegalArgumentException(secondsKey + " must be " + (legacyHours ? "positive" : "non-negative"));
+    }
+    return value;
   }
 
   static boolean kafkaMode(ParameterTool parameters) {
@@ -114,7 +142,7 @@ public final class RecommendationAttributionJob {
       copyFeature(properties, features, "recommendation_generation");
       copyFeature(properties, features, "sku_id");
       return new RecommendationEvent(
-          text(envelope, "event_id"), type, eventTime(envelope.path("client_time")),
+          text(envelope, "event_id"), type, eventTime(firstEventTime(envelope)),
           text(properties, "request_id"), text(properties, "impression_id"), text(properties, "product_id"),
           userId, properties.path("position").asInt(0), text(properties, "model_version"),
           text(properties, "feature_set_version"), monetaryMicros(properties, type), features);
@@ -137,7 +165,16 @@ public final class RecommendationAttributionJob {
     private static long eventTime(JsonNode value) {
       if (value.isIntegralNumber()) return value.asLong();
       if (value.isTextual()) return Instant.parse(value.asText()).toEpochMilli();
-      throw new IllegalArgumentException("client_time must be epoch milliseconds or ISO-8601");
+      throw new IllegalArgumentException(
+          "client_time, timestamp, or collector_time must be epoch milliseconds or ISO-8601");
+    }
+
+    private static JsonNode firstEventTime(JsonNode envelope) {
+      for (String field : List.of("client_time", "timestamp", "collector_time")) {
+        JsonNode value = envelope.path(field);
+        if (!value.isMissingNode() && !value.isNull()) return value;
+      }
+      return MAPPER.missingNode();
     }
 
     private static long monetaryMicros(JsonNode properties, RecommendationEvent.EventType type) {

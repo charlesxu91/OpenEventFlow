@@ -23,8 +23,14 @@ flink run target/flink-recommendation-0.1.0-SNAPSHOT.jar \
   --bootstrap-servers kafka.recsys-infra.svc.cluster.local:9092 \
   --input-topic recsys.behavior-events.v1 \
   --output-topic recsys.training-samples.v1 \
-  --group-id openeventflow-recommendation-attribution
+  --group-id openeventflow-recommendation-attribution \
+  --source-idle-seconds 60
 ```
+
+For bounded integration tests, `--window-seconds` and `--allowed-lateness-seconds`
+override the production-scale hour/minute options. Idle Kafka partitions are excluded
+from the global watermark after `--source-idle-seconds`, preventing an empty partition
+from indefinitely blocking attribution-window completion.
 
 Kafka input resumes from committed offsets (or earliest when the group has no offset). Output uses the composite
 attribution key as the Kafka record key and `AT_LEAST_ONCE` delivery. Consumers must upsert/deduplicate by that key;

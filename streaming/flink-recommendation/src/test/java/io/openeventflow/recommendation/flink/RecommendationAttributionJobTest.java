@@ -6,11 +6,36 @@ import io.openeventflow.recommendation.model.AttributionKey;
 import io.openeventflow.recommendation.model.RecommendationEvent;
 import io.openeventflow.recommendation.model.TrainingSample;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Map;
+import org.apache.flink.api.java.typeutils.runtime.kryo.JavaSerializer;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.junit.jupiter.api.Test;
 
 final class RecommendationAttributionJobTest {
+  @Test void registersJavaSerializationForRecommendationEventRecords() {
+    StreamExecutionEnvironment environment = StreamExecutionEnvironment.getExecutionEnvironment();
+
+    RecommendationAttributionJob.configureSerialization(environment);
+
+    assertEquals(
+        JavaSerializer.class,
+        environment.getConfig().getRegisteredTypesWithKryoSerializerClasses().get(RecommendationEvent.class));
+  }
+
+  @Test void acceptsSecondLevelDurationsForSmokeTestsAndRejectsInvalidWindows() {
+    ParameterTool parameters = ParameterTool.fromArgs(new String[] {
+        "--window-seconds", "5", "--allowed-lateness-seconds", "0"});
+    assertEquals(Duration.ofSeconds(5), RecommendationAttributionJob.durationParameter(
+        parameters, "window-seconds", "window-hours", 168, true));
+    assertEquals(Duration.ZERO, RecommendationAttributionJob.durationParameter(
+        parameters, "allowed-lateness-seconds", "allowed-lateness-minutes", 10, false));
+    assertThrows(IllegalArgumentException.class, () -> RecommendationAttributionJob.durationParameter(
+        ParameterTool.fromArgs(new String[] {"--window-seconds", "0"}),
+        "window-seconds", "window-hours", 168, true));
+  }
+
   @Test void detectsFileAndCompleteKafkaModes() {
     assertFalse(RecommendationAttributionJob.kafkaMode(ParameterTool.fromArgs(
         new String[] {"--input", "events", "--output", "samples"})));
@@ -33,6 +58,20 @@ final class RecommendationAttributionJobTest {
     assertEquals(RecommendationEvent.EventType.IMPRESSION, event.eventType());
     assertEquals("user-1", event.userId());
     assertEquals("HOME", event.features().get("surface"));
+  }
+
+  @Test void acceptsSdkTimestampAndCollectorTimeFallbacks() throws Exception {
+    RecommendationAttributionJob.JsonEventDecoder decoder = new RecommendationAttributionJob.JsonEventDecoder();
+    RecommendationEvent timestamped = decoder.map("""
+        {"event_id":"event-ts","event_name":"product_impressed","timestamp":"2026-07-12T04:10:00Z",
+         "properties":{"request_id":"r","impression_id":"i","product_id":"p"}}
+        """);
+    assertEquals(1783829400000L, timestamped.eventTimeMillis());
+    RecommendationEvent collected = decoder.map("""
+        {"event_id":"event-collected","event_name":"product_clicked","collector_time":1783829401000,
+         "properties":{"request_id":"r","impression_id":"i","product_id":"p"}}
+        """);
+    assertEquals(1783829401000L, collected.eventTimeMillis());
   }
 
   @Test void mapsAuthoritativeMoneyAndFiltersUnattributableEvents() throws Exception {
