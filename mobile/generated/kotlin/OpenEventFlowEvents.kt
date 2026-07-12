@@ -18,6 +18,12 @@ object OpenEventFlowSchemas {
     const val VIDEO_PLAYED_SCHEMA = "iglu:io.openeventflow/video_played/jsonschema/1-0-0"
     const val VIDEO_WATCH_SCHEMA = "iglu:io.openeventflow/video_watch/jsonschema/1-0-0"
     const val VIDEO_ENGAGED_SCHEMA = "iglu:io.openeventflow/video_engaged/jsonschema/1-0-0"
+    const val RECOMMENDATION_DELIVERY_SCHEMA = "iglu:io.openeventflow/recommendation_delivery/jsonschema/1-0-0"
+    const val RECOMMENDATION_IMPRESSION_SCHEMA = "iglu:io.openeventflow/recommendation_impression/jsonschema/1-0-0"
+    const val RECOMMENDATION_CLICK_SCHEMA = "iglu:io.openeventflow/recommendation_click/jsonschema/1-0-0"
+    const val RECOMMENDATION_ADD_TO_CART_SCHEMA = "iglu:io.openeventflow/recommendation_add_to_cart/jsonschema/1-0-0"
+    const val RECOMMENDATION_PAYMENT_SCHEMA = "iglu:io.openeventflow/recommendation_payment/jsonschema/1-0-0"
+    const val RECOMMENDATION_REFUND_SCHEMA = "iglu:io.openeventflow/recommendation_refund/jsonschema/1-0-0"
 }
 
 data class RecommendationDeliveredEvent(
@@ -233,5 +239,84 @@ data class VideoEngagedEvent(
     val playId: String? = null,
     val engagementId: String,
     val action: String
+)
+
+data class RecommendationDeliveryEvent(
+    val requestId: String,
+    val impressionId: String,
+    val itemType: String,
+    val itemId: String,
+    val rankPosition: Long? = null,
+    val modelVersion: String? = null,
+    val strategyId: String? = null,
+    val experimentId: String? = null
+)
+
+data class RecommendationImpressionEvent(
+    val requestId: String,
+    val impressionId: String,
+    val itemType: String,
+    val itemId: String,
+    val rankPosition: Long? = null,
+    val modelVersion: String? = null,
+    val strategyId: String? = null,
+    val experimentId: String? = null,
+    val visibleRatio: Double? = null,
+    val durationMs: Long? = null
+)
+
+data class RecommendationClickEvent(
+    val requestId: String,
+    val impressionId: String,
+    val itemType: String,
+    val itemId: String,
+    val rankPosition: Long? = null,
+    val modelVersion: String? = null,
+    val strategyId: String? = null,
+    val experimentId: String? = null
+)
+
+data class RecommendationAddToCartEvent(
+    val requestId: String,
+    val impressionId: String,
+    val itemType: String,
+    val itemId: String,
+    val rankPosition: Long? = null,
+    val modelVersion: String? = null,
+    val strategyId: String? = null,
+    val experimentId: String? = null,
+    val cartId: String? = null,
+    val quantity: Long? = null
+)
+
+data class RecommendationPaymentEvent(
+    val requestId: String,
+    val impressionId: String,
+    val itemType: String,
+    val itemId: String,
+    val rankPosition: Long? = null,
+    val modelVersion: String? = null,
+    val strategyId: String? = null,
+    val experimentId: String? = null,
+    val orderId: String? = null,
+    val paymentId: String? = null,
+    val amount: Double? = null,
+    val currency: String? = null
+)
+
+data class RecommendationRefundEvent(
+    val requestId: String,
+    val impressionId: String,
+    val itemType: String,
+    val itemId: String,
+    val rankPosition: Long? = null,
+    val modelVersion: String? = null,
+    val strategyId: String? = null,
+    val experimentId: String? = null,
+    val orderId: String? = null,
+    val paymentId: String? = null,
+    val refundId: String? = null,
+    val amount: Double? = null,
+    val currency: String? = null
 )
 

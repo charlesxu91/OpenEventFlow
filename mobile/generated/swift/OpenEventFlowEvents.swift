@@ -18,6 +18,12 @@ public enum OpenEventFlowSchemas {
     public static let videoPlayedSchema = "iglu:io.openeventflow/video_played/jsonschema/1-0-0"
     public static let videoWatchSchema = "iglu:io.openeventflow/video_watch/jsonschema/1-0-0"
     public static let videoEngagedSchema = "iglu:io.openeventflow/video_engaged/jsonschema/1-0-0"
+    public static let recommendationDeliverySchema = "iglu:io.openeventflow/recommendation_delivery/jsonschema/1-0-0"
+    public static let recommendationImpressionSchema = "iglu:io.openeventflow/recommendation_impression/jsonschema/1-0-0"
+    public static let recommendationClickSchema = "iglu:io.openeventflow/recommendation_click/jsonschema/1-0-0"
+    public static let recommendationAddToCartSchema = "iglu:io.openeventflow/recommendation_add_to_cart/jsonschema/1-0-0"
+    public static let recommendationPaymentSchema = "iglu:io.openeventflow/recommendation_payment/jsonschema/1-0-0"
+    public static let recommendationRefundSchema = "iglu:io.openeventflow/recommendation_refund/jsonschema/1-0-0"
 }
 
 public struct RecommendationDeliveredEvent: Codable {
@@ -233,5 +239,84 @@ public struct VideoEngagedEvent: Codable {
     public let playId: String?
     public let engagementId: String
     public let action: String
+}
+
+public struct RecommendationDeliveryEvent: Codable {
+    public let requestId: String
+    public let impressionId: String
+    public let itemType: String
+    public let itemId: String
+    public let rankPosition: Int?
+    public let modelVersion: String?
+    public let strategyId: String?
+    public let experimentId: String?
+}
+
+public struct RecommendationImpressionEvent: Codable {
+    public let requestId: String
+    public let impressionId: String
+    public let itemType: String
+    public let itemId: String
+    public let rankPosition: Int?
+    public let modelVersion: String?
+    public let strategyId: String?
+    public let experimentId: String?
+    public let visibleRatio: Double?
+    public let durationMs: Int?
+}
+
+public struct RecommendationClickEvent: Codable {
+    public let requestId: String
+    public let impressionId: String
+    public let itemType: String
+    public let itemId: String
+    public let rankPosition: Int?
+    public let modelVersion: String?
+    public let strategyId: String?
+    public let experimentId: String?
+}
+
+public struct RecommendationAddToCartEvent: Codable {
+    public let requestId: String
+    public let impressionId: String
+    public let itemType: String
+    public let itemId: String
+    public let rankPosition: Int?
+    public let modelVersion: String?
+    public let strategyId: String?
+    public let experimentId: String?
+    public let cartId: String?
+    public let quantity: Int?
+}
+
+public struct RecommendationPaymentEvent: Codable {
+    public let requestId: String
+    public let impressionId: String
+    public let itemType: String
+    public let itemId: String
+    public let rankPosition: Int?
+    public let modelVersion: String?
+    public let strategyId: String?
+    public let experimentId: String?
+    public let orderId: String?
+    public let paymentId: String?
+    public let amount: Double?
+    public let currency: String?
+}
+
+public struct RecommendationRefundEvent: Codable {
+    public let requestId: String
+    public let impressionId: String
+    public let itemType: String
+    public let itemId: String
+    public let rankPosition: Int?
+    public let modelVersion: String?
+    public let strategyId: String?
+    public let experimentId: String?
+    public let orderId: String?
+    public let paymentId: String?
+    public let refundId: String?
+    public let amount: Double?
+    public let currency: String?
 }
 

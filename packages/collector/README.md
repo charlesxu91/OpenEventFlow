@@ -37,3 +37,9 @@ const {
   createTrackingPlanRegistry
 } = require("@openeventflow/collector");
 ```
+
+The HTTP runtime supports `COLLECTOR_API_KEY`, `MAX_BODY_BYTES`, `GET /healthz`, and `GET /readyz`. Health endpoints remain unauthenticated for orchestrator probes. Broker adapters may return a promise from `publish`; the collector waits for it before acknowledging the HTTP batch and maps publish failures to `503 Service Unavailable`.
+
+The bundled in-memory broker is intended only for tests and local development. Its acknowledgement is not a durable Kafka or Redpanda acknowledgement. Production deployments should inject a Kafka adapter configured for the required durability, retry, and idempotence guarantees.
+
+Set `REQUIRE_DURABLE_BROKER=true` in production. The standalone runtime then fails fast unless `BROKER_ADAPTER_MODULE` points to a module exporting `publish(topic, message)` or `createBroker()`. The Kubernetes example enables this guard intentionally; mount and configure the deployment-specific adapter before rollout.

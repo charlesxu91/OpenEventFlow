@@ -21,6 +21,7 @@ OpenEventFlow/
   packages/
     core/                     Shared analytics runtime
     collector/                Event collector and validation
+    recommendation/           Attribution and realtime-interest domain logic
     react/                    React bindings
     react-native/             React Native bindings
     snowplow-adapter/         Snowplow self-describing event adapter
@@ -43,6 +44,8 @@ OpenEventFlow/
 - Platform packages and SDKs should wrap `packages/core` concepts instead of redefining event semantics.
 - `tools/tracking-plan-cli` owns code generation from tracking plans.
 - `packages/collector` owns ingestion, validation, topic publishing, and bad-event routing.
+- `packages/recommendation` owns deterministic attribution, training-sample, correction, and interest-decay rules.
+- `streaming/flink-recommendation` owns runnable Flink examples that apply those documented contracts to Kafka/Redpanda streams.
 - `packages/warehouse` owns stream consumption and warehouse writes.
 - `warehouse/dbt` owns SQL model definitions.
 - `e2e` owns cross-boundary proof that SDK events match warehouse output.

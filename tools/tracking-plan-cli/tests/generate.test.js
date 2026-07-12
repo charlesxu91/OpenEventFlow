@@ -81,3 +81,92 @@ test("generateArtifacts rejects invalid tracking plans before writing output", (
     /schemaVendor is required/
   );
 });
+
+test("generateArtifacts validates and retains deprecation metadata", () => {
+  const { generateArtifacts } = require("../src/generate");
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "openeventflow-deprecated-"));
+  const eventDeprecation = {
+    since: "2026-07-12",
+    replacement: "recommendation_delivery",
+    removeAfter: "2026-10-10"
+  };
+  const fieldDeprecation = {
+    since: "2026-07-12",
+    replacement: "strategy_id",
+    removeAfter: "2026-10-10"
+  };
+  const trackingPlan = {
+    namespace: "io.openeventflow.app",
+    schemaVendor: "io.openeventflow",
+    events: [{
+      name: "recommendation_impression",
+      version: "1-0-0",
+      deprecated: eventDeprecation,
+      properties: {
+        model_version: { type: "string", deprecated: fieldDeprecation }
+      }
+    }]
+  };
+
+  generateArtifacts(trackingPlan, tempDir);
+  const schema = JSON.parse(fs.readFileSync(path.join(
+    tempDir,
+    "schemas/io.openeventflow/recommendation_impression/jsonschema/1-0-0.json"
+  ), "utf8"));
+
+  assert.equal(schema.deprecated, true);
+  assert.deepEqual(schema["x-openeventflow-deprecation"], eventDeprecation);
+  assert.equal(schema.properties.model_version.deprecated, true);
+  assert.deepEqual(schema.properties.model_version["x-openeventflow-deprecation"], fieldDeprecation);
+});
+
+test("validateTrackingPlan rejects malformed or too-short deprecation windows", () => {
+  const { validateTrackingPlan } = require("../src/generate");
+  const basePlan = {
+    namespace: "io.openeventflow.app",
+    schemaVendor: "io.openeventflow",
+    events: [{
+      name: "recommendation_impression",
+      version: "1-0-0",
+      properties: { request_id: { type: "string" } }
+    }]
+  };
+  const invalidValues = [
+    [true, /deprecated must be an object/],
+    [{ since: "2026-07-12", replacement: "next" }, /removeAfter is required/],
+    [{ since: "2026-02-30", replacement: "next", removeAfter: "2026-06-01" }, /since must be a valid YYYY-MM-DD date/],
+    [{ since: "2026-07-12", replacement: "", removeAfter: "2026-10-10" }, /replacement is required/],
+    [{ since: "2026-07-12", replacement: "next", removeAfter: "2026-10-09" }, /removeAfter must be at least 90 days after since/],
+    [{ since: "2026-07-12", replacement: "next", removeAfter: "not-a-date" }, /removeAfter must be a valid YYYY-MM-DD date/],
+    [{ since: "2026-07-12", replacement: "next", removeAfter: "2026-10-10", remove_after: "typo" }, /unsupported key remove_after/]
+  ];
+
+  for (const [deprecated, expected] of invalidValues) {
+    const candidate = structuredClone(basePlan);
+    candidate.events[0].properties.request_id.deprecated = deprecated;
+    assert.throws(() => validateTrackingPlan(candidate), expected);
+  }
+});
+
+test("example recommendation contracts share correlation identity fields", () => {
+  const trackingPlan = JSON.parse(
+    fs.readFileSync(path.resolve(__dirname, "../../../examples/tracking-plan.json"), "utf8")
+  );
+  const recommendationEvents = [
+    "recommendation_delivery",
+    "recommendation_impression",
+    "recommendation_click",
+    "recommendation_add_to_cart",
+    "recommendation_payment",
+    "recommendation_refund"
+  ];
+
+  for (const eventName of recommendationEvents) {
+    const event = trackingPlan.events.find((candidate) => candidate.name === eventName);
+    assert.ok(event, `${eventName} must exist`);
+    for (const fieldName of ["request_id", "impression_id", "item_type", "item_id"]) {
+      assert.equal(event.properties[fieldName].type, "string", `${eventName}.${fieldName}`);
+      assert.ok(event.required.includes(fieldName), `${eventName}.${fieldName} must be required`);
+    }
+  }
+});

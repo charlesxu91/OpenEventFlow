@@ -236,3 +236,88 @@ export interface VideoEngagedEvent {
   action: string;
 }
 
+export const RECOMMENDATION_DELIVERY_SCHEMA = "iglu:io.openeventflow/recommendation_delivery/jsonschema/1-0-0";
+export interface RecommendationDeliveryEvent {
+  requestId: string;
+  impressionId: string;
+  itemType: string;
+  itemId: string;
+  rankPosition?: number;
+  modelVersion?: string;
+  strategyId?: string;
+  experimentId?: string;
+}
+
+export const RECOMMENDATION_IMPRESSION_SCHEMA = "iglu:io.openeventflow/recommendation_impression/jsonschema/1-0-0";
+export interface RecommendationImpressionEvent {
+  requestId: string;
+  impressionId: string;
+  itemType: string;
+  itemId: string;
+  rankPosition?: number;
+  modelVersion?: string;
+  strategyId?: string;
+  experimentId?: string;
+  visibleRatio?: number;
+  durationMs?: number;
+}
+
+export const RECOMMENDATION_CLICK_SCHEMA = "iglu:io.openeventflow/recommendation_click/jsonschema/1-0-0";
+export interface RecommendationClickEvent {
+  requestId: string;
+  impressionId: string;
+  itemType: string;
+  itemId: string;
+  rankPosition?: number;
+  modelVersion?: string;
+  strategyId?: string;
+  experimentId?: string;
+}
+
+export const RECOMMENDATION_ADD_TO_CART_SCHEMA = "iglu:io.openeventflow/recommendation_add_to_cart/jsonschema/1-0-0";
+export interface RecommendationAddToCartEvent {
+  requestId: string;
+  impressionId: string;
+  itemType: string;
+  itemId: string;
+  rankPosition?: number;
+  modelVersion?: string;
+  strategyId?: string;
+  experimentId?: string;
+  cartId?: string;
+  quantity?: number;
+}
+
+export const RECOMMENDATION_PAYMENT_SCHEMA = "iglu:io.openeventflow/recommendation_payment/jsonschema/1-0-0";
+export interface RecommendationPaymentEvent {
+  requestId: string;
+  impressionId: string;
+  itemType: string;
+  itemId: string;
+  rankPosition?: number;
+  modelVersion?: string;
+  strategyId?: string;
+  experimentId?: string;
+  orderId?: string;
+  paymentId?: string;
+  amount?: number;
+  currency?: string;
+}
+
+export const RECOMMENDATION_REFUND_SCHEMA = "iglu:io.openeventflow/recommendation_refund/jsonschema/1-0-0";
+export interface RecommendationRefundEvent {
+  requestId: string;
+  impressionId: string;
+  itemType: string;
+  itemId: string;
+  rankPosition?: number;
+  modelVersion?: string;
+  strategyId?: string;
+  experimentId?: string;
+  orderId?: string;
+  paymentId?: string;
+  refundId?: string;
+  amount?: number;
+  currency?: string;
+}
+

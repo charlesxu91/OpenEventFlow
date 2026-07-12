@@ -1,0 +1,72 @@
+{
+  "$schema": "http://iglucentral.com/schemas/com.snowplowanalytics.self-desc/schema/jsonschema/1-0-0#",
+  "self": {
+    "vendor": "io.openeventflow",
+    "name": "recommendation_refund",
+    "format": "jsonschema",
+    "version": "1-0-0"
+  },
+  "type": "object",
+  "description": "A refund corrected an attributed recommendation payment.",
+  "additionalProperties": false,
+  "properties": {
+    "request_id": {
+      "type": "string",
+      "description": "Recommendation request identifier."
+    },
+    "impression_id": {
+      "type": "string",
+      "description": "Attributed impression identifier."
+    },
+    "item_type": {
+      "type": "string",
+      "description": "Domain-neutral item type, for example product or video."
+    },
+    "item_id": {
+      "type": "string",
+      "description": "Identifier within the declared item type."
+    },
+    "rank_position": {
+      "type": "integer",
+      "description": "Zero-based position in the recommendation result."
+    },
+    "model_version": {
+      "type": "string",
+      "description": "Model version that produced the result."
+    },
+    "strategy_id": {
+      "type": "string",
+      "description": "Serving strategy identifier."
+    },
+    "experiment_id": {
+      "type": "string",
+      "description": "Experiment assignment identifier."
+    },
+    "order_id": {
+      "type": "string",
+      "description": "Optional commerce order identifier."
+    },
+    "payment_id": {
+      "type": "string",
+      "description": "Original payment identifier being corrected."
+    },
+    "refund_id": {
+      "type": "string",
+      "description": "Optional refund identifier."
+    },
+    "amount": {
+      "type": "number",
+      "description": "Refunded amount."
+    },
+    "currency": {
+      "type": "string",
+      "description": "ISO currency code."
+    }
+  },
+  "required": [
+    "request_id",
+    "impression_id",
+    "item_type",
+    "item_id"
+  ]
+}

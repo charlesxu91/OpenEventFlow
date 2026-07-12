@@ -4,7 +4,7 @@
   "private": true,
   "description": "End-to-end frontend event collection, streaming, warehousing, and consumption pipeline for large apps.",
   "scripts": {
-    "test": "node --test tools/tracking-plan-cli/tests/*.test.js packages/core/tests/*.test.js packages/web/tests/*.test.js packages/react/tests/*.test.js packages/react-native/tests/*.test.js packages/collector/tests/*.test.js packages/warehouse/tests/*.test.js sdks/tests/*.test.js e2e/tests/*.test.js",
+    "test": "node --test tools/tracking-plan-cli/tests/*.test.js packages/core/tests/*.test.js packages/web/tests/*.test.js packages/react/tests/*.test.js packages/react-native/tests/*.test.js packages/collector/tests/*.test.js packages/recommendation/tests/*.test.js packages/warehouse/tests/*.test.js sdks/tests/*.test.js e2e/tests/*.test.js",
     "test:mobile": "node scripts/test-mobile-toolchains.js",
     "codegen": "node tools/tracking-plan-cli/src/index.js generate examples/tracking-plan.json mobile/generated",
     "smoke:dbt": "node scripts/smoke-dbt-clickhouse.js",

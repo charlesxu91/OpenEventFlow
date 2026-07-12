@@ -496,6 +496,121 @@
           "description": "Engagement action, for example like, comment, share, or follow."
         }
       }
+    },
+    {
+      "name": "recommendation_delivery",
+      "version": "1-0-0",
+      "owner": "recommendation",
+      "description": "A recommendation item was delivered to a client.",
+      "required": ["request_id", "impression_id", "item_type", "item_id"],
+      "properties": {
+        "request_id": { "type": "string", "description": "Recommendation request identifier." },
+        "impression_id": { "type": "string", "description": "Identifier correlating delivery and downstream behavior." },
+        "item_type": { "type": "string", "description": "Domain-neutral item type, for example product or video." },
+        "item_id": { "type": "string", "description": "Identifier within the declared item type." },
+        "rank_position": { "type": "integer", "description": "Zero-based position in the recommendation result." },
+        "model_version": { "type": "string", "description": "Model version that produced the result." },
+        "strategy_id": { "type": "string", "description": "Serving strategy identifier." },
+        "experiment_id": { "type": "string", "description": "Experiment assignment identifier." }
+      }
+    },
+    {
+      "name": "recommendation_impression",
+      "version": "1-0-0",
+      "owner": "recommendation",
+      "description": "A delivered recommendation item became visible.",
+      "required": ["request_id", "impression_id", "item_type", "item_id"],
+      "properties": {
+        "request_id": { "type": "string", "description": "Recommendation request identifier." },
+        "impression_id": { "type": "string", "description": "Identifier correlating the impression and downstream behavior." },
+        "item_type": { "type": "string", "description": "Domain-neutral item type, for example product or video." },
+        "item_id": { "type": "string", "description": "Identifier within the declared item type." },
+        "rank_position": { "type": "integer", "description": "Zero-based position in the recommendation result." },
+        "model_version": { "type": "string", "description": "Model version that produced the result." },
+        "strategy_id": { "type": "string", "description": "Serving strategy identifier." },
+        "experiment_id": { "type": "string", "description": "Experiment assignment identifier." },
+        "visible_ratio": { "type": "number", "description": "Visible area ratio from 0 to 1." },
+        "duration_ms": { "type": "integer", "description": "Visible duration in milliseconds." }
+      }
+    },
+    {
+      "name": "recommendation_click",
+      "version": "1-0-0",
+      "owner": "recommendation",
+      "description": "A user clicked a recommendation item.",
+      "required": ["request_id", "impression_id", "item_type", "item_id"],
+      "properties": {
+        "request_id": { "type": "string", "description": "Recommendation request identifier." },
+        "impression_id": { "type": "string", "description": "Attributed impression identifier." },
+        "item_type": { "type": "string", "description": "Domain-neutral item type, for example product or video." },
+        "item_id": { "type": "string", "description": "Identifier within the declared item type." },
+        "rank_position": { "type": "integer", "description": "Zero-based position in the recommendation result." },
+        "model_version": { "type": "string", "description": "Model version that produced the result." },
+        "strategy_id": { "type": "string", "description": "Serving strategy identifier." },
+        "experiment_id": { "type": "string", "description": "Experiment assignment identifier." }
+      }
+    },
+    {
+      "name": "recommendation_add_to_cart",
+      "version": "1-0-0",
+      "owner": "recommendation",
+      "description": "A user added an attributed recommendation item to a cart.",
+      "required": ["request_id", "impression_id", "item_type", "item_id"],
+      "properties": {
+        "request_id": { "type": "string", "description": "Recommendation request identifier." },
+        "impression_id": { "type": "string", "description": "Attributed impression identifier." },
+        "item_type": { "type": "string", "description": "Domain-neutral item type, for example product or video." },
+        "item_id": { "type": "string", "description": "Identifier within the declared item type." },
+        "rank_position": { "type": "integer", "description": "Zero-based position in the recommendation result." },
+        "model_version": { "type": "string", "description": "Model version that produced the result." },
+        "strategy_id": { "type": "string", "description": "Serving strategy identifier." },
+        "experiment_id": { "type": "string", "description": "Experiment assignment identifier." },
+        "cart_id": { "type": "string", "description": "Optional commerce cart identifier." },
+        "quantity": { "type": "integer", "description": "Number of units added." }
+      }
+    },
+    {
+      "name": "recommendation_payment",
+      "version": "1-0-0",
+      "owner": "recommendation",
+      "description": "A payment was attributed to a recommendation impression.",
+      "required": ["request_id", "impression_id", "item_type", "item_id"],
+      "properties": {
+        "request_id": { "type": "string", "description": "Recommendation request identifier." },
+        "impression_id": { "type": "string", "description": "Attributed impression identifier." },
+        "item_type": { "type": "string", "description": "Domain-neutral item type, for example product or video." },
+        "item_id": { "type": "string", "description": "Identifier within the declared item type." },
+        "rank_position": { "type": "integer", "description": "Zero-based position in the recommendation result." },
+        "model_version": { "type": "string", "description": "Model version that produced the result." },
+        "strategy_id": { "type": "string", "description": "Serving strategy identifier." },
+        "experiment_id": { "type": "string", "description": "Experiment assignment identifier." },
+        "order_id": { "type": "string", "description": "Optional commerce order identifier." },
+        "payment_id": { "type": "string", "description": "Optional payment identifier used by corrections." },
+        "amount": { "type": "number", "description": "Attributed payment amount." },
+        "currency": { "type": "string", "description": "ISO currency code." }
+      }
+    },
+    {
+      "name": "recommendation_refund",
+      "version": "1-0-0",
+      "owner": "recommendation",
+      "description": "A refund corrected an attributed recommendation payment.",
+      "required": ["request_id", "impression_id", "item_type", "item_id"],
+      "properties": {
+        "request_id": { "type": "string", "description": "Recommendation request identifier." },
+        "impression_id": { "type": "string", "description": "Attributed impression identifier." },
+        "item_type": { "type": "string", "description": "Domain-neutral item type, for example product or video." },
+        "item_id": { "type": "string", "description": "Identifier within the declared item type." },
+        "rank_position": { "type": "integer", "description": "Zero-based position in the recommendation result." },
+        "model_version": { "type": "string", "description": "Model version that produced the result." },
+        "strategy_id": { "type": "string", "description": "Serving strategy identifier." },
+        "experiment_id": { "type": "string", "description": "Experiment assignment identifier." },
+        "order_id": { "type": "string", "description": "Optional commerce order identifier." },
+        "payment_id": { "type": "string", "description": "Original payment identifier being corrected." },
+        "refund_id": { "type": "string", "description": "Optional refund identifier." },
+        "amount": { "type": "number", "description": "Refunded amount." },
+        "currency": { "type": "string", "description": "ISO currency code." }
+      }
     }
   ]
 }

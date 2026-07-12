@@ -1,0 +1,112 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: collector-auth
+  namespace: openeventflow
+type: Opaque
+stringData:
+  api-key: replace-with-a-secret-manager-value
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: collector
+  namespace: openeventflow
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: collector
+  template:
+    metadata:
+      labels:
+        app: collector
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: collector
+          image: ghcr.io/openeventflow/collector:0.1.0
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: TRACKING_PLAN_PATH
+              value: /etc/openeventflow/tracking-plan.json
+            - name: COLLECTOR_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: collector-auth
+                  key: api-key
+            - name: MAX_BODY_BYTES
+              value: "1048576"
+            - name: REQUIRE_DURABLE_BROKER
+              value: "true"
+            # Mount your adapter and set BROKER_ADAPTER_MODULE to its absolute path.
+            # The pod intentionally fails fast without one instead of losing events in memory.
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+          volumeMounts:
+            - name: tracking-plan
+              mountPath: /etc/openeventflow
+              readOnly: true
+      volumes:
+        - name: tracking-plan
+          configMap:
+            name: tracking-plan
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: collector
+  namespace: openeventflow
+spec:
+  selector:
+    app: collector
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: collector
+  namespace: openeventflow
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: collector
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: collector
+  namespace: openeventflow
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: collector

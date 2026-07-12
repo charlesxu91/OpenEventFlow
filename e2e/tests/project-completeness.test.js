@@ -8,6 +8,11 @@ const root = path.join(__dirname, "../..");
 test("open-source release surface includes service runners, platform build files, and deploy templates", () => {
   for (const file of [
     "packages/collector/src/server.js",
+    "packages/recommendation/src/attribution.js",
+    "streaming/flink-recommendation/pom.xml",
+    "deploy/k8s/collector.yaml",
+    "docs/recommendation-pipeline.md",
+    "docs/schema-evolution.md",
     "packages/warehouse/src/service.js",
     "scripts/smoke-dbt-clickhouse.js",
     "deploy/snowplow/docker-compose.yml",
@@ -20,6 +25,22 @@ test("open-source release surface includes service runners, platform build files
   ]) {
     assert.equal(fs.existsSync(path.join(root, file)), true, `${file} should exist`);
   }
+});
+
+test("release documentation indexes implemented recommendation and governance modules", () => {
+  const readme = fs.readFileSync(path.join(root, "README.md"), "utf8");
+  for (const phrase of [
+    "Recommendation attribution core",
+    "Flink attribution and realtime-interest jobs",
+    "Tracking-plan compatibility checks"
+  ]) {
+    assert.match(readme, new RegExp(phrase));
+  }
+});
+
+test("production collector manifest forbids the in-memory broker", () => {
+  const manifest = fs.readFileSync(path.join(root, "deploy/k8s/collector.yaml"), "utf8");
+  assert.match(manifest, /name: REQUIRE_DURABLE_BROKER\s+value: "true"/);
 });
 
 test("npm packages expose a publishable file surface and package exports", () => {
