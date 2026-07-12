@@ -39,6 +39,10 @@ spec:
                   key: api-key
             - name: MAX_BODY_BYTES
               value: "1048576"
+            - name: REQUIRE_DURABLE_BROKER
+              value: "true"
+            # Mount your adapter and set BROKER_ADAPTER_MODULE to its absolute path.
+            # The pod intentionally fails fast without one instead of losing events in memory.
           resources:
             requests:
               cpu: 100m

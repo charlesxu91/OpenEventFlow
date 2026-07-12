@@ -131,7 +131,12 @@ function createHttpCollectorServer({
       return;
     }
     if (request.method === "GET" && requestPath === "/readyz") {
-      const ready = await readiness();
+      let ready = false;
+      try {
+        ready = await readiness();
+      } catch {
+        ready = false;
+      }
       sendJson(response, ready ? 200 : 503, { status: ready ? "ready" : "not_ready" });
       return;
     }

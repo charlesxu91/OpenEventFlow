@@ -8,6 +8,7 @@ const {
   createInMemoryTopicBroker,
   createTrackingPlanRegistry
 } = require("../src/index");
+const { resolveBroker } = require("../src/server");
 
 const trackingPlan = {
   schemaVendor: "io.openeventflow",
@@ -108,6 +109,13 @@ test("collector awaits broker acknowledgements before accepting a batch", async 
   ]);
 });
 
+test("production broker guard refuses the in-memory fallback", () => {
+  assert.throws(
+    () => resolveBroker({ requireDurableBroker: true }),
+    /durable broker required/
+  );
+});
+
 test("http collector exposes health and readiness without authentication", async () => {
   const server = createHttpCollectorServer({
     collector: { collect: async () => ({ accepted: 0, enriched: 0, bad: 0 }) },
@@ -122,6 +130,18 @@ test("http collector exposes health and readiness without authentication", async
   assert.deepEqual(JSON.parse(health.body), { status: "ok" });
   assert.equal(ready.statusCode, 200);
   assert.deepEqual(JSON.parse(ready.body), { status: "ready" });
+});
+
+test("http collector reports rejected readiness checks as unavailable", async () => {
+  const server = createHttpCollectorServer({
+    collector: { collect: async () => ({ accepted: 0, enriched: 0, bad: 0 }) },
+    readiness: async () => { throw new Error("broker check failed"); }
+  });
+
+  const response = await request(server, { method: "GET", path: "/readyz" });
+
+  assert.equal(response.statusCode, 503);
+  assert.deepEqual(JSON.parse(response.body), { status: "not_ready" });
 });
 
 test("http collector requires the configured API key", async () => {

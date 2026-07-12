@@ -38,6 +38,11 @@ test("release documentation indexes implemented recommendation and governance mo
   }
 });
 
+test("production collector manifest forbids the in-memory broker", () => {
+  const manifest = fs.readFileSync(path.join(root, "deploy/k8s/collector.yaml"), "utf8");
+  assert.match(manifest, /name: REQUIRE_DURABLE_BROKER\s+value: "true"/);
+});
+
 test("npm packages expose a publishable file surface and package exports", () => {
   const packages = [
     "collector",

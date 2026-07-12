@@ -14,7 +14,7 @@ function createCollectorRuntime(options = {}) {
   }
 
   const trackingPlan = JSON.parse(fs.readFileSync(path.resolve(trackingPlanPath), "utf8"));
-  const broker = options.broker || createInMemoryTopicBroker();
+  const broker = resolveBroker(options);
   const collector = createCollector({
     broker,
     registry: createTrackingPlanRegistry(trackingPlan),
@@ -31,6 +31,24 @@ function createCollectorRuntime(options = {}) {
   });
 
   return { broker, collector, server };
+}
+
+function resolveBroker(options) {
+  if (options.broker) return options.broker;
+  const adapterModule = options.brokerAdapterModule || process.env.BROKER_ADAPTER_MODULE;
+  if (adapterModule) {
+    const adapter = require(path.resolve(adapterModule));
+    const broker = typeof adapter.createBroker === "function" ? adapter.createBroker() : adapter;
+    if (!broker || typeof broker.publish !== "function") {
+      throw new Error("broker adapter must export publish() or createBroker()");
+    }
+    return broker;
+  }
+  const durableRequired = options.requireDurableBroker === true || process.env.REQUIRE_DURABLE_BROKER === "true";
+  if (durableRequired) {
+    throw new Error("durable broker required: configure BROKER_ADAPTER_MODULE");
+  }
+  return createInMemoryTopicBroker();
 }
 
 async function main() {
@@ -52,5 +70,6 @@ if (require.main === module) {
 }
 
 module.exports = {
-  createCollectorRuntime
+  createCollectorRuntime,
+  resolveBroker
 };
