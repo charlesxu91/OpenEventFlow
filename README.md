@@ -43,6 +43,8 @@ Web / React / React Native / Android / iOS / Flutter app
   -> OpenEventFlow Collector or Snowplow Collector
   -> Redpanda / Kafka topic
   -> schema validation / enrichment / bad-event routing
+  -> recommendation attribution / realtime interest
+  -> training samples / feature sink
   -> Warehouse loader
   -> ClickHouse ODS / DWD / fact / ADS tables
   -> BI / recommendations / ads / experimentation / data products
@@ -56,7 +58,10 @@ The SDK layer keeps app code stable. The collector and stream layer provide inge
 - Web, React, and React Native SDK packages
 - Android Kotlin, iOS Swift, and Flutter/Dart SDKs
 - Tracking-plan CLI that generates JSON Schema, TypeScript, Kotlin, Swift, and Dart artifacts
-- Collector with schema validation, raw/enriched topics, and bad-event routing
+- Tracking-plan compatibility checks for additive, deprecated, and breaking changes
+- Collector with API-key authentication, health/readiness endpoints, bounded request bodies, awaited broker adapters, and bad-event routing
+- Recommendation attribution core with deduplication, event-time windows, negative samples, refund corrections, and late-event routing
+- Flink attribution and realtime-interest jobs with Kafka/Redpanda wiring, checkpoints, watermarks, state TTL, and an injectable feature sink
 - Snowplow self-describing event adapter
 - Warehouse loader and ClickHouse HTTP adapter
 - ClickHouse DDL and dbt models for ODS, DWD, fact, and ADS layers
@@ -107,6 +112,7 @@ examples/                    Example tracking plans and SDK usage snippets
 mobile/generated/            Generated JSON schemas and typed mobile event models
 packages/core/               Shared analytics runtime
 packages/collector/          Collector, validation, topic publishing, HTTP server
+packages/recommendation/     Recommendation attribution and interest domain logic
 packages/snowplow-adapter/   Snowplow self-describing event adapter
 packages/warehouse/          Warehouse loader and ClickHouse adapter
 packages/web/                Browser SDK
@@ -116,6 +122,7 @@ sdks/android/                Android Kotlin SDK
 sdks/ios/                    iOS Swift SDK
 sdks/flutter/                Flutter/Dart SDK
 tools/tracking-plan-cli/     Tracking-plan schema and code generator
+streaming/flink-recommendation/ Flink attribution and realtime-interest jobs
 warehouse/dbt/               dbt models for warehouse layers
 ```
 
@@ -151,7 +158,10 @@ The current suite covers:
 - React and React Native bindings
 - Native and Flutter SDK API contracts
 - Tracking-plan code generation
-- Collector schema validation and bad-event routing
+- Tracking-plan compatibility checks
+- Collector authentication, probes, request limits, broker acknowledgment, schema validation, and bad-event routing
+- Recommendation attribution, correction, negative-sample, and interest-decay rules
+- Flink recommendation module tests (`mvn -f streaming/flink-recommendation/pom.xml test`)
 - Warehouse loading into ODS, DWD, fact, and ADS layers
 - Ecommerce and short-video e2e consistency
 - Real Redpanda and ClickHouse smoke tests
@@ -173,6 +183,8 @@ npm run smoke:docker:video
 - [Framework Support](docs/framework-support.md)
 - [Mobile Engineering](docs/mobile-engineering.md)
 - [Tracking Plan](docs/tracking-plan.md)
+- [Schema Evolution](docs/schema-evolution.md)
+- [Recommendation Pipeline](docs/recommendation-pipeline.md)
 - [Stay Duration](docs/stay-duration.md)
 - [Warehouse](docs/warehouse.md)
 - [Local Pipeline](docs/local-pipeline.md)
@@ -181,7 +193,7 @@ npm run smoke:docker:video
 
 ## Project Status
 
-OpenEventFlow is at an open-source first-release stage. The core SDK, collector, warehouse, generated artifacts, local deployment templates, and e2e verification flow are implemented. The next stage is hardening persistence queues, production authentication, observability dashboards, and more framework-specific auto-tracking adapters.
+OpenEventFlow is at an open-source first-release stage. The repository includes contract generation and compatibility checks, hardened collector building blocks, recommendation attribution and interest logic, Flink job examples, warehouse models, deployment templates, and e2e verification. Persistent SDK queues, a concrete production Kafka adapter, OpenTelemetry dashboards, full privacy governance, and production operations remain follow-up work.
 
 ## Contributing
 

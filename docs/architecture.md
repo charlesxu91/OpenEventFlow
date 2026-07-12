@@ -12,6 +12,7 @@ OpenEventFlow owns:
 - Autotracking conventions
 - Identity, session, consent, and debug API shape
 - Local pipeline examples and warehouse modeling guidance
+- Recommendation event contracts, attribution rules, training-sample outputs, and Flink processing examples
 
 Snowplow owns:
 
@@ -32,7 +33,8 @@ Business code
   -> raw stream
   -> Snowplow Enrich + Iglu
   -> enriched stream or bad events
-  -> Flink / Snowbridge / consumers
+  -> OpenEventFlow Flink attribution / realtime-interest jobs or other consumers
+  -> training samples / feature sink boundary
   -> ClickHouse / lakehouse / warehouse
 ```
 
