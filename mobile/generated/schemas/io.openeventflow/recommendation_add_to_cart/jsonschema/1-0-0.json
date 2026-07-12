@@ -1,0 +1,60 @@
+{
+  "$schema": "http://iglucentral.com/schemas/com.snowplowanalytics.self-desc/schema/jsonschema/1-0-0#",
+  "self": {
+    "vendor": "io.openeventflow",
+    "name": "recommendation_add_to_cart",
+    "format": "jsonschema",
+    "version": "1-0-0"
+  },
+  "type": "object",
+  "description": "A user added an attributed recommendation item to a cart.",
+  "additionalProperties": false,
+  "properties": {
+    "request_id": {
+      "type": "string",
+      "description": "Recommendation request identifier."
+    },
+    "impression_id": {
+      "type": "string",
+      "description": "Attributed impression identifier."
+    },
+    "item_type": {
+      "type": "string",
+      "description": "Domain-neutral item type, for example product or video."
+    },
+    "item_id": {
+      "type": "string",
+      "description": "Identifier within the declared item type."
+    },
+    "rank_position": {
+      "type": "integer",
+      "description": "Zero-based position in the recommendation result."
+    },
+    "model_version": {
+      "type": "string",
+      "description": "Model version that produced the result."
+    },
+    "strategy_id": {
+      "type": "string",
+      "description": "Serving strategy identifier."
+    },
+    "experiment_id": {
+      "type": "string",
+      "description": "Experiment assignment identifier."
+    },
+    "cart_id": {
+      "type": "string",
+      "description": "Optional commerce cart identifier."
+    },
+    "quantity": {
+      "type": "integer",
+      "description": "Number of units added."
+    }
+  },
+  "required": [
+    "request_id",
+    "impression_id",
+    "item_type",
+    "item_id"
+  ]
+}

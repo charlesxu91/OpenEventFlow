@@ -1,0 +1,60 @@
+{
+  "$schema": "http://iglucentral.com/schemas/com.snowplowanalytics.self-desc/schema/jsonschema/1-0-0#",
+  "self": {
+    "vendor": "io.openeventflow",
+    "name": "recommendation_impression",
+    "format": "jsonschema",
+    "version": "1-0-0"
+  },
+  "type": "object",
+  "description": "A delivered recommendation item became visible.",
+  "additionalProperties": false,
+  "properties": {
+    "request_id": {
+      "type": "string",
+      "description": "Recommendation request identifier."
+    },
+    "impression_id": {
+      "type": "string",
+      "description": "Identifier correlating the impression and downstream behavior."
+    },
+    "item_type": {
+      "type": "string",
+      "description": "Domain-neutral item type, for example product or video."
+    },
+    "item_id": {
+      "type": "string",
+      "description": "Identifier within the declared item type."
+    },
+    "rank_position": {
+      "type": "integer",
+      "description": "Zero-based position in the recommendation result."
+    },
+    "model_version": {
+      "type": "string",
+      "description": "Model version that produced the result."
+    },
+    "strategy_id": {
+      "type": "string",
+      "description": "Serving strategy identifier."
+    },
+    "experiment_id": {
+      "type": "string",
+      "description": "Experiment assignment identifier."
+    },
+    "visible_ratio": {
+      "type": "number",
+      "description": "Visible area ratio from 0 to 1."
+    },
+    "duration_ms": {
+      "type": "integer",
+      "description": "Visible duration in milliseconds."
+    }
+  },
+  "required": [
+    "request_id",
+    "impression_id",
+    "item_type",
+    "item_id"
+  ]
+}

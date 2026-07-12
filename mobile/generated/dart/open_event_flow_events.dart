@@ -303,3 +303,294 @@ class VideoEngagedEvent implements OpenEventFlowGeneratedEvent {
       };
 }
 
+class RecommendationDeliveryEvent implements OpenEventFlowGeneratedEvent {
+  static const String recommendationDeliverySchema = "iglu:io.openeventflow/recommendation_delivery/jsonschema/1-0-0";
+
+  final String requestId;
+  final String impressionId;
+  final String itemType;
+  final String itemId;
+  final int? rankPosition;
+  final String? modelVersion;
+  final String? strategyId;
+  final String? experimentId;
+
+  const RecommendationDeliveryEvent({
+    required this.requestId,
+    required this.impressionId,
+    required this.itemType,
+    required this.itemId,
+    this.rankPosition,
+    this.modelVersion,
+    this.strategyId,
+    this.experimentId,
+  });
+
+  @override
+  String get name => "recommendation_delivery";
+
+  @override
+  String get schema => recommendationDeliverySchema;
+
+  @override
+  Map<String, Object?> toJson() => {
+        "request_id": requestId,
+        "impression_id": impressionId,
+        "item_type": itemType,
+        "item_id": itemId,
+        "rank_position": rankPosition,
+        "model_version": modelVersion,
+        "strategy_id": strategyId,
+        "experiment_id": experimentId,
+      };
+}
+
+class RecommendationImpressionEvent implements OpenEventFlowGeneratedEvent {
+  static const String recommendationImpressionSchema = "iglu:io.openeventflow/recommendation_impression/jsonschema/1-0-0";
+
+  final String requestId;
+  final String impressionId;
+  final String itemType;
+  final String itemId;
+  final int? rankPosition;
+  final String? modelVersion;
+  final String? strategyId;
+  final String? experimentId;
+  final double? visibleRatio;
+  final int? durationMs;
+
+  const RecommendationImpressionEvent({
+    required this.requestId,
+    required this.impressionId,
+    required this.itemType,
+    required this.itemId,
+    this.rankPosition,
+    this.modelVersion,
+    this.strategyId,
+    this.experimentId,
+    this.visibleRatio,
+    this.durationMs,
+  });
+
+  @override
+  String get name => "recommendation_impression";
+
+  @override
+  String get schema => recommendationImpressionSchema;
+
+  @override
+  Map<String, Object?> toJson() => {
+        "request_id": requestId,
+        "impression_id": impressionId,
+        "item_type": itemType,
+        "item_id": itemId,
+        "rank_position": rankPosition,
+        "model_version": modelVersion,
+        "strategy_id": strategyId,
+        "experiment_id": experimentId,
+        "visible_ratio": visibleRatio,
+        "duration_ms": durationMs,
+      };
+}
+
+class RecommendationClickEvent implements OpenEventFlowGeneratedEvent {
+  static const String recommendationClickSchema = "iglu:io.openeventflow/recommendation_click/jsonschema/1-0-0";
+
+  final String requestId;
+  final String impressionId;
+  final String itemType;
+  final String itemId;
+  final int? rankPosition;
+  final String? modelVersion;
+  final String? strategyId;
+  final String? experimentId;
+
+  const RecommendationClickEvent({
+    required this.requestId,
+    required this.impressionId,
+    required this.itemType,
+    required this.itemId,
+    this.rankPosition,
+    this.modelVersion,
+    this.strategyId,
+    this.experimentId,
+  });
+
+  @override
+  String get name => "recommendation_click";
+
+  @override
+  String get schema => recommendationClickSchema;
+
+  @override
+  Map<String, Object?> toJson() => {
+        "request_id": requestId,
+        "impression_id": impressionId,
+        "item_type": itemType,
+        "item_id": itemId,
+        "rank_position": rankPosition,
+        "model_version": modelVersion,
+        "strategy_id": strategyId,
+        "experiment_id": experimentId,
+      };
+}
+
+class RecommendationAddToCartEvent implements OpenEventFlowGeneratedEvent {
+  static const String recommendationAddToCartSchema = "iglu:io.openeventflow/recommendation_add_to_cart/jsonschema/1-0-0";
+
+  final String requestId;
+  final String impressionId;
+  final String itemType;
+  final String itemId;
+  final int? rankPosition;
+  final String? modelVersion;
+  final String? strategyId;
+  final String? experimentId;
+  final String? cartId;
+  final int? quantity;
+
+  const RecommendationAddToCartEvent({
+    required this.requestId,
+    required this.impressionId,
+    required this.itemType,
+    required this.itemId,
+    this.rankPosition,
+    this.modelVersion,
+    this.strategyId,
+    this.experimentId,
+    this.cartId,
+    this.quantity,
+  });
+
+  @override
+  String get name => "recommendation_add_to_cart";
+
+  @override
+  String get schema => recommendationAddToCartSchema;
+
+  @override
+  Map<String, Object?> toJson() => {
+        "request_id": requestId,
+        "impression_id": impressionId,
+        "item_type": itemType,
+        "item_id": itemId,
+        "rank_position": rankPosition,
+        "model_version": modelVersion,
+        "strategy_id": strategyId,
+        "experiment_id": experimentId,
+        "cart_id": cartId,
+        "quantity": quantity,
+      };
+}
+
+class RecommendationPaymentEvent implements OpenEventFlowGeneratedEvent {
+  static const String recommendationPaymentSchema = "iglu:io.openeventflow/recommendation_payment/jsonschema/1-0-0";
+
+  final String requestId;
+  final String impressionId;
+  final String itemType;
+  final String itemId;
+  final int? rankPosition;
+  final String? modelVersion;
+  final String? strategyId;
+  final String? experimentId;
+  final String? orderId;
+  final String? paymentId;
+  final double? amount;
+  final String? currency;
+
+  const RecommendationPaymentEvent({
+    required this.requestId,
+    required this.impressionId,
+    required this.itemType,
+    required this.itemId,
+    this.rankPosition,
+    this.modelVersion,
+    this.strategyId,
+    this.experimentId,
+    this.orderId,
+    this.paymentId,
+    this.amount,
+    this.currency,
+  });
+
+  @override
+  String get name => "recommendation_payment";
+
+  @override
+  String get schema => recommendationPaymentSchema;
+
+  @override
+  Map<String, Object?> toJson() => {
+        "request_id": requestId,
+        "impression_id": impressionId,
+        "item_type": itemType,
+        "item_id": itemId,
+        "rank_position": rankPosition,
+        "model_version": modelVersion,
+        "strategy_id": strategyId,
+        "experiment_id": experimentId,
+        "order_id": orderId,
+        "payment_id": paymentId,
+        "amount": amount,
+        "currency": currency,
+      };
+}
+
+class RecommendationRefundEvent implements OpenEventFlowGeneratedEvent {
+  static const String recommendationRefundSchema = "iglu:io.openeventflow/recommendation_refund/jsonschema/1-0-0";
+
+  final String requestId;
+  final String impressionId;
+  final String itemType;
+  final String itemId;
+  final int? rankPosition;
+  final String? modelVersion;
+  final String? strategyId;
+  final String? experimentId;
+  final String? orderId;
+  final String? paymentId;
+  final String? refundId;
+  final double? amount;
+  final String? currency;
+
+  const RecommendationRefundEvent({
+    required this.requestId,
+    required this.impressionId,
+    required this.itemType,
+    required this.itemId,
+    this.rankPosition,
+    this.modelVersion,
+    this.strategyId,
+    this.experimentId,
+    this.orderId,
+    this.paymentId,
+    this.refundId,
+    this.amount,
+    this.currency,
+  });
+
+  @override
+  String get name => "recommendation_refund";
+
+  @override
+  String get schema => recommendationRefundSchema;
+
+  @override
+  Map<String, Object?> toJson() => {
+        "request_id": requestId,
+        "impression_id": impressionId,
+        "item_type": itemType,
+        "item_id": itemId,
+        "rank_position": rankPosition,
+        "model_version": modelVersion,
+        "strategy_id": strategyId,
+        "experiment_id": experimentId,
+        "order_id": orderId,
+        "payment_id": paymentId,
+        "refund_id": refundId,
+        "amount": amount,
+        "currency": currency,
+      };
+}
+

@@ -79,6 +79,7 @@ function validateTrackingPlan(plan) {
     if (!event.version) {
       throw new Error(`event.version is required for ${event.name}`);
     }
+    validateDeprecation(event.deprecated, `event ${event.name}`);
     if (!event.properties || typeof event.properties !== "object") {
       throw new Error(`event.properties is required for ${event.name}`);
     }
@@ -92,8 +93,52 @@ function validateTrackingPlan(plan) {
       if (!field.type || !TYPE_MAP[field.type]) {
         throw new Error(`unsupported type for ${event.name}.${fieldName}: ${field.type}`);
       }
+      validateDeprecation(field.deprecated, `field ${event.name}.${fieldName}`);
     }
   }
+}
+
+function validateDeprecation(deprecated, subject) {
+  if (deprecated === undefined || deprecated === false) {
+    return;
+  }
+  if (!deprecated || typeof deprecated !== "object" || Array.isArray(deprecated)) {
+    throw new Error(`${subject} deprecated must be an object`);
+  }
+  const allowedKeys = new Set(["since", "replacement", "removeAfter"]);
+  for (const key of Object.keys(deprecated)) {
+    if (!allowedKeys.has(key)) {
+      throw new Error(`${subject} deprecated has unsupported key ${key}`);
+    }
+  }
+  for (const key of ["since", "replacement", "removeAfter"]) {
+    if (typeof deprecated[key] !== "string" || deprecated[key].trim() === "") {
+      throw new Error(`${subject} deprecated.${key} is required`);
+    }
+  }
+  const since = parseIsoDate(deprecated.since);
+  if (since == null) {
+    throw new Error(`${subject} deprecated.since must be a valid YYYY-MM-DD date`);
+  }
+  const removeAfter = parseIsoDate(deprecated.removeAfter);
+  if (removeAfter == null) {
+    throw new Error(`${subject} deprecated.removeAfter must be a valid YYYY-MM-DD date`);
+  }
+  const ninetyDaysMs = 90 * 24 * 60 * 60 * 1000;
+  if (removeAfter - since < ninetyDaysMs) {
+    throw new Error(`${subject} deprecated.removeAfter must be at least 90 days after since`);
+  }
+}
+
+function parseIsoDate(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return null;
+  }
+  const timestamp = Date.parse(`${value}T00:00:00.000Z`);
+  if (!Number.isFinite(timestamp) || new Date(timestamp).toISOString().slice(0, 10) !== value) {
+    return null;
+  }
+  return timestamp;
 }
 
 function buildJsonSchema(plan, event) {
@@ -103,9 +148,10 @@ function buildJsonSchema(plan, event) {
       type: TYPE_MAP[field.type].json,
       description: field.description || ""
     };
+    retainDeprecation(properties[fieldName], field.deprecated);
   }
 
-  return {
+  const schema = {
     $schema: "http://iglucentral.com/schemas/com.snowplowanalytics.self-desc/schema/jsonschema/1-0-0#",
     self: {
       vendor: plan.schemaVendor,
@@ -119,6 +165,15 @@ function buildJsonSchema(plan, event) {
     properties,
     required: event.required || []
   };
+  retainDeprecation(schema, event.deprecated);
+  return schema;
+}
+
+function retainDeprecation(schemaNode, deprecated) {
+  if (deprecated && typeof deprecated === "object") {
+    schemaNode.deprecated = true;
+    schemaNode["x-openeventflow-deprecation"] = { ...deprecated };
+  }
 }
 
 function buildKotlin(events, schemaVendor) {
